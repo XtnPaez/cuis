@@ -11,4 +11,4 @@ Schema: mapa
 
 ## Wiki
 
-En la wiki estará el diseño de la base con los scripts de creación
+En la wiki estará el diseño de la base con los scripts de creación y el DER
