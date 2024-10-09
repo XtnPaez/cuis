@@ -8,3 +8,7 @@ Host: 10.65.117.12
 Base: sig
 
 Schema: mapa
+
+## Wiki
+
+En la wiki estará el diseño de la base con los scripts de creación
