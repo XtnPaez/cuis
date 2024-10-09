@@ -11,8 +11,4 @@ Schema: mapa
 
 ## Wiki
 
-En la wiki estará el diseño de la base con los scripts de creación y el DER. También tendrá la documentación del desarrollo.
-
-## Ojo
-
-Acá ponemos aquello en lo que hay que prestar atención tanto para la consolidación de la base como para el desarrollo.
+En la wiki estará el diseño de la base con los scripts de creación y el DER. También tendrá la documentación del desarrollo. En **Ojo** pondremos aquello en lo que hay que prestar atención tanto para la consolidación de la base como para el desarrollo.
