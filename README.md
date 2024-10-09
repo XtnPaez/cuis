@@ -4,5 +4,7 @@ Diseño de la base mapa que tendrá será el registro de CUI´s de mapa y su rel
 
 ## Servidor
 Host: 10.65.117.12
+
 Base: sig
+
 Schema: mapa
