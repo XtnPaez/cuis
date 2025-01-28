@@ -3,11 +3,13 @@
 Acá vamos a Documentar la BBDD y la aplicación que va a permitir las modificaciones en la base de CUI´s. 
 
 ## Servidor
-Host: 10.65.117.12
+Se usará un servidor Local hasta poder configurarlo nuevamente en un servidor publico
+
+Host: 10.97.247.69
 
 Base: sig
 
-Schema: mapa
+Schema: cuis
 
 ## Carpeta geocaba
 
