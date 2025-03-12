@@ -1,9 +1,7 @@
 # Documentación del Diseño de Base de Datos
 
 ## 1 Objetivo
-El objetivo de este diseño es estructurar una base de datos para gestionar información sobre edificios, niveles y modalidades de los mismos (nivmod), direcciones administrativas, parcelas y coordenadas. 
-Además, se contempla la gestión de observaciones y operativos de relevamiento relacionados con los edificios. 
-Con la modificación propuesta, se incorpora una relación muchos a muchos entre edificios y nivmod, permitiendo que cada edificio pueda estar asociado a uno o más niveles y modalidades.
+El objetivo de este diseño es estructurar una base de datos para gestionar información sobre edificios, direcciones administrativas, parcelas y coordenadas. Además, se contempla la gestión de observaciones y operativos de relevamiento relacionados con los edificios.
 
 ## 2 Tablas principales
 
