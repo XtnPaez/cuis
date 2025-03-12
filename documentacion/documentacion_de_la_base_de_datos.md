@@ -74,44 +74,7 @@ Descripción:
 
 •	Guarda las coordenadas geográficas de los edificios en los sistemas de coordenadas GKBA y WGS84.
  
-### 2.4 Tabla nivmod
-Almacena información sobre los niveles y modalidades de los edificios.
-
-```
-CREATE TABLE cuis.nivmod (
-    id SERIAL PRIMARY KEY,
-    nivel character varying(32),
-    nivel_sigla character varying(4),
-    modalidad character varying(32),
-    modalidad_sigla character varying(4),
-    sigla_combinada character varying(8) GENERATED ALWAYS AS (initcap(nivel_sigla || modalidad_sigla)) STORED
-);
-```
-
-Descripción:
-
-•	La tabla nivmod almacena los niveles y modalidades de los edificios, junto con las siglas correspondientes. La columna sigla_combinada es generada automáticamente a partir de las siglas del nivel y modalidad.
- 
-### 2.5 Tabla edificio_nivmod
-Esta tabla intermedia gestiona la relación muchos a muchos entre los edificios y los nivmod.
-
-```
-CREATE TABLE cuis.edificio_nivmod (
-    edificio_id INT REFERENCES cuis.edificios(id) ON DELETE CASCADE,
-    nivmod_id INT REFERENCES cuis.nivmod(id) ON DELETE CASCADE,
-    PRIMARY KEY (edificio_id, nivmod_id)
-);
-```
-
-Descripción:
-
-•	Relaciona cada edificio con uno o más nivmod.
-
-•	Cada registro en esta tabla asocia un edificio a un nivel y modalidad específica, permitiendo que un edificio esté vinculado a varios niveles y modalidades.
-
-•	La relación es de muchos a muchos.
-
-### 2.6 Tabla direcciones
+### 2.4 Tabla direcciones
 Almacena la información de las direcciones de los edificios, incluyendo referencias a la ubicación administrativa, parcela y coordenadas.
 
 ```
@@ -134,7 +97,7 @@ Descripción:
 
 •	Registra las direcciones físicas de los edificios, incluyendo información adicional sobre su ubicación administrativa, catastral y geográfica.
  
-### 2.7 Tabla predios
+### 2.5 Tabla predios
 Almacena información sobre los predios donde se encuentran los edificios.
 
 ```
@@ -148,7 +111,7 @@ Descripción:
 
 •	Almacena los nombres de los predios, que pueden agrupar varios edificios.
  
-### 2.8 Tabla usuarios
+### 2.6 Tabla usuarios
 Gestiona la autenticación y seguimiento de los usuarios que realizan modificaciones en los edificios.
 
 ```
@@ -164,7 +127,7 @@ Descripción:
 
 •	Almacena información sobre los usuarios que pueden modificar la base de datos, incluyendo su nombre, correo electrónico y rol.
  
-### 2.9 Tabla edificios
+### 2.7 Tabla edificios
 Almacena la información principal de los edificios, incluyendo su estado, sector, ubicación y coordenadas.
 
 ```
@@ -174,6 +137,8 @@ CREATE TABLE cuis.edificios (
     sector sector NOT NULL,
     direccion_principal_id INT UNIQUE REFERENCES direcciones(id) ON DELETE SET NULL,
     predio_id INT REFERENCES predios(id),
+    gestionado BOOLEAN,
+    institucion_id INT,
     x_gkba NUMERIC(20,10),
     y_gkba NUMERIC(20,10),
     usuario_modificacion INT REFERENCES usuarios(id) NOT NULL,
@@ -185,7 +150,7 @@ Descripción:
 
 •	Registra los detalles básicos de los edificios, incluyendo su estado (activo, inactivo, baja, etc.), sector (público, privado, etc.) y referencias a la dirección principal y predio.
 
-### 2.10 Tabla operativos_relevamiento
+### 2.8 Tabla operativos_relevamiento
 Almacena información sobre los operativos de relevamiento realizados en los edificios.
 
 ```
@@ -201,7 +166,7 @@ Descripción:
 
 •	Registra los operativos de relevamiento realizados sobre los edificios, junto con la fecha en que se realizaron.
  
-### 2.11 Tabla observaciones
+### 2.9 Tabla observaciones
 Permite registrar observaciones sobre los edificios realizadas por los usuarios.
 
 ```
@@ -217,13 +182,24 @@ CREATE TABLE cuis.observaciones (
 Descripción:
 
 •	Registra comentarios o anotaciones sobre los edificios, junto con el usuario que realizó la observación y la fecha de la misma.
- 
+
+### 2.10 Tabla instituciones
+Almacena información sobre las instituciones que gestionan el edificio
+
+```
+CREATE TABLE cuis.instituciones (
+    id SERIAL PRIMARY KEY,
+    nombre character varying(64)
+);
+```
+
+Descripción:
+
+•	Registra las instituciones que gestionan el edificio.
+
 ## 3 Relaciones entre las Tablas
 
-* Tabla edificio_nivmod: Relaciona un edificio con uno o más nivmod.
-* Tabla edificios: Relaciona un edificio con direcciones, predios y usuarios (para seguimiento de modificaciones).
+* Tabla edificios: Relaciona un edificio con direcciones, predios, instituciones y usuarios (para seguimiento de modificaciones).
 * Tablas direcciones, predios, coordenadas y parcela: Almacenan información geográfica y administrativa asociada a cada edificio.
   
 Este diseño facilita la gestión y el análisis de los edificios, proporcionando una estructura flexible y escalable para asociar edificios con múltiples niveles y modalidades, a la vez que mantiene una organización eficiente de los datos.
-
-
