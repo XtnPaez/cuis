@@ -1,203 +1,247 @@
 # Documentación del Diseño de Base de Datos
 
-## 1 Objetivo
+## Objetivo
+
 El objetivo de este diseño es estructurar una base de datos para gestionar información sobre edificios, direcciones administrativas, parcelas y coordenadas. Además, se contempla la gestión de observaciones y operativos de relevamiento relacionados con los edificios.
 
-## 2 Tablas principales
+## Principios del Diseño
 
-### 2.1 Tabla direccion_administrativa
-Esta tabla almacena información administrativa asociada a las ubicaciones de los edificios.
+La solución está diseñada para:
+- Evitar redundancia: Se crean tablas separadas para direcciones, parcelas y ubicaciones administrativas.
+- Optimizar consultas: Se establecen relaciones mediante claves foráneas para facilitar consultas cruzadas.
+- Usar tipos de datos adecuados: Se emplean TEXT, VARCHAR, NUMERIC, BOOLEAN, y GEOMETRY para almacenar coordenadas.
 
+## Normalización del Modelo de Datos
+
+El diseño está normalizado y cuenta con las siguientes entidades principales:
+- direcciones: Almacena la dirección normalizada con código de calle y altura.
+- ubicacion_administrativa: Contiene datos administrativos como comuna, barrio y código postal.
+- parcelas: Representa la parcela catastral con SMP, dimensiones y superficie.
+- coordenadas: Guarda la georreferenciación de la dirección.
+- edificios: Representa cada edificio educativo con su CUI y atributos principales.
+- predios: Contiene los datos de los predios y permite agrupar edificios.
+- operativos_relevamiento: Tabla intermedia para relacionar edificios con operativos (CIE 2017, CENIE 2010 y futuros).
+- edificios_direcciones: Tabla intermedia para relacionar edificios con direcciones y marcar cuál es la principal.
+- instituciones: Contiene las instituciones a las que pueden pertenecer los edificios.
+
+## Explicación del Diseño de Tablas
+
+### Tabla direcciones
+- Contiene la dirección normalizada con codigo_calle, calle y altura.
+- No almacena detalles administrativos ni catastrales, sino que referencia a las otras tablas.
+- Evita redundancia al no repetir información de ubicación o parcela en cada consulta.
+
+### Tabla ubicacion_administrativa
+- Contiene datos como comuna, barrio, distrito escolar, etc.
+- Se relaciona con direcciones mediante ubicacion_administrativa_id.
+- Centraliza información para evitar duplicaciones.
+
+### Tabla parcelas
+- Guarda información catastral (SMP, dimensiones, superficies, pisos, etc.).
+- Relacionada con direcciones y puertas.
+
+### Tabla puertas
+- Almacena los accesos de una parcela.
+- Permite diferenciar puertas principales u oficiales.
+- Evita listas de accesos dentro de la tabla parcelas.
+
+### Tabla coordenadas
+- Almacena coordenadas geográficas.
+- Compatible con PostGIS para optimizar consultas espaciales.
+
+### Tabla edificios
+- Contiene datos clave como CUI, estado, sector y gestión.
+- Puede estar vinculado a un predio opcionalmente.
+
+### Tabla predios
+- Permite agrupar varios edificios en una misma unidad territorial.
+
+### Tabla instituciones
+- Almacena instituciones asociadas a los edificios.
+
+### Tabla operativos_relevamiento
+- Permite registrar múltiples relevamientos para cada edificio.
+
+### Tabla edificios_direcciones
+- Relaciona edificios con direcciones, permitiendo definir la dirección principal.
+
+## Beneficios del Modelo
+- Eficiencia: Reduce el espacio de almacenamiento.
+- Mantenimiento simplificado: Al actualizar una entidad, no se generan inconsistencias.
+- Velocidad de consulta: Optimiza la indexación y las relaciones para mejorar el rendimiento.
+
+Este modelo garantiza la integridad y escalabilidad de los datos, permitiendo una gestión eficiente de la información sobre los edificios y sus atributos relacionados.
+
+## Anexo: Scripts de Creación de Tablas
+Tabla de direcciones normalizadas
 ```
-CREATE TYPE sector AS ENUM ('PÚBLICO', 'PRIVADO', 'OTRO', 'SIN DATOS');
-CREATE TYPE estado_edificio AS ENUM ('ACTIVO', 'INACTIVO', 'BAJA', 'PROYECTO', 'OTRO', 'SIN DATOS');
-CREATE TABLE cuis.direccion_administrativa (
+CREATE TABLE cuis.direcciones (
     id SERIAL PRIMARY KEY,
-    comuna character varying(16),
-    barrio character varying(64),
-    comisaria character varying(32),
-    area_hospitalaria character varying(32),
-    region_sanitaria character varying(32),
-    distrito_escolar character varying(64),
-    comisaria_vecinal character varying(16),
-    seccion_catastral integer,
-    distrito_economico character varying(64),
-    codigo_de_planeamiento_urbano character varying(16)
+    codigo_calle TEXT NOT NULL,
+    calle TEXT NOT NULL,
+    altura TEXT NOT NULL,
+    ubicacion_administrativa_id INT UNIQUE,
+    parcela_id INT UNIQUE,
+    coordenadas_id INT UNIQUE
 );
 ```
-Descripción:
 
-•	sector y estado_edificio son tipos de datos ENUM que se utilizan para clasificar los edificios.
-
-•	Almacena información administrativa de ubicación de los edificios, como la comuna, barrio, comisaría, entre otros.
-
-### 2.2 Tabla parcela
-Almacena información geográfica y catastral de las parcelas donde se encuentran los edificios.
-
+Tabla de información administrativa
 ```
-CREATE TABLE cuis.parcela (
+CREATE TABLE cuis.ubicacion_administrativa (
     id SERIAL PRIMARY KEY,
-    smp character varying(16),
-    seccion character varying(16),
-    manzana character varying(16),
-    parcela character varying(16),
+    comuna TEXT,
+    barrio TEXT,
+    comisaria TEXT,
+    area_hospitalaria TEXT,
+    region_sanitaria TEXT,
+    distrito_escolar TEXT,
+    comisaria_vecinal TEXT,
+    seccion_catastral TEXT,
+    codigo_postal TEXT,
+    codigo_postal_argentino TEXT
+);
+```
+
+Tabla de parcelas catastrales
+```
+CREATE TABLE cuis.parcelas (
+    id SERIAL PRIMARY KEY,
+    smp TEXT UNIQUE NOT NULL,
+    seccion TEXT,
+    manzana TEXT,
+    parcela TEXT,
     superficie_total NUMERIC,
     superficie_cubierta NUMERIC,
     frente NUMERIC,
     fondo NUMERIC,
+    propiedad_horizontal BOOLEAN,
     pisos_bajo_rasante INT,
     pisos_sobre_rasante INT,
-    fuente character varying(64)
+    unidades_funcionales INT,
+    locales INT
 );
 ```
 
-Descripción:
+Tabla de puertas asociadas a una parcela
+```
+CREATE TABLE cuis.puertas (
+    id SERIAL PRIMARY KEY,
+    parcela_id INT NOT NULL,
+    codigo_calle TEXT NOT NULL,
+    calle TEXT NOT NULL,
+    altura TEXT NOT NULL,
+    puerta_principal BOOLEAN,
+    puerta_oficial BOOLEAN,
+    fuente TEXT,
+    fecha_actualizacion DATE,
+    FOREIGN KEY (parcela_id) REFERENCES cuis.parcelas(id) ON DELETE CASCADE
+);
+```
 
-•	Almacena información catastral de cada parcela: sección, manzana, parcela, superficies y detalles sobre los pisos.
- 
-### 2.3 Tabla coordenadas
-Almacena las coordenadas geográficas en dos sistemas de referencia: GKBA y WGS84.
-
+Tabla de coordenadas
 ```
 CREATE TABLE cuis.coordenadas (
     id SERIAL PRIMARY KEY,
-    x_gkba NUMERIC(20,10),
-    y_gkba NUMERIC(20,10),
-    x_wgs84 NUMERIC(10,6),
-    y_wgs84 NUMERIC(10,6)
+    x_gkba NUMERIC NOT NULL,
+    y_gkba NUMERIC NOT NULL,
+    x_wgs84 NUMERIC NOT NULL,
+    y_wgs84 NUMERIC NOT NULL,
+    geom_gkba GEOMETRY,
+    geom_wgs84 GEOMETRY
 );
 ```
 
-Descripción:
-
-•	Guarda las coordenadas geográficas de los edificios en los sistemas de coordenadas GKBA y WGS84.
- 
-### 2.4 Tabla direcciones
-Almacena la información de las direcciones de los edificios, incluyendo referencias a la ubicación administrativa, parcela y coordenadas.
-
+Crear relaciones entre tablas
 ```
-CREATE TABLE cuis.direcciones (
+ALTER TABLE cuis.direcciones ADD CONSTRAINT fk_ubicacion FOREIGN KEY (ubicacion_administrativa_id) REFERENCES cuis.ubicacion_administrativa(id) ON DELETE SET NULL;
+ALTER TABLE cuis.direcciones ADD CONSTRAINT fk_parcela FOREIGN KEY (parcela_id) REFERENCES cuis.parcelas(id) ON DELETE SET NULL;
+ALTER TABLE cuis.direcciones ADD CONSTRAINT fk_coordenadas FOREIGN KEY (coordenadas_id) REFERENCES cuis.coordenadas(id) ON DELETE SET NULL;
+```
+
+Tabla de Usuarios
+```
+CREATE TABLE IF NOT EXISTS cuis.usuarios (
     id SERIAL PRIMARY KEY,
-    codigo_calle integer NOT NULL,
-    calle character varying(128) NOT NULL,
-    altura int NOT NULL,
-    codigo_postal character varying(8),
-    codigo_postal_argentino character varying(16),
-    ubicacion_administrativa_id INT REFERENCES direccion_administrativa(id),
-    parcela_id INT REFERENCES parcela(id),
-    coordenadas_id INT REFERENCES coordenadas(id),
-    fuente character varying(32),
-    fecha_actualizacion TIMESTAMP
+    nombre TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    rol TEXT CHECK (rol IN ('admin', 'editor', 'visualizador')) NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT now()
 );
 ```
 
-Descripción:
-
-•	Registra las direcciones físicas de los edificios, incluyendo información adicional sobre su ubicación administrativa, catastral y geográfica.
- 
-### 2.5 Tabla predios
-Almacena información sobre los predios donde se encuentran los edificios.
-
+Tabla de Predios
 ```
-CREATE TABLE cuis.predios (
+CREATE TABLE IF NOT EXISTS cuis.predios (
     id SERIAL PRIMARY KEY,
-    nombre character varying(32) NOT NULL
+    cup TEXT UNIQUE NOT NULL,
+    nombre TEXT
 );
 ```
 
-Descripción:
-
-•	Almacena los nombres de los predios, que pueden agrupar varios edificios.
- 
-### 2.6 Tabla usuarios
-Gestiona la autenticación y seguimiento de los usuarios que realizan modificaciones en los edificios.
-
+Tabla de Edificios
 ```
-CREATE TABLE cuis.usuarios (
+CREATE TABLE IF NOT EXISTS cuis.edificios (
     id SERIAL PRIMARY KEY,
-    nombre character varying(32) NOT NULL,
-    email character varying(128),
-    rol character varying(32) NOT NULL
+    cui TEXT UNIQUE NOT NULL,
+    estado TEXT CHECK (estado IN ('activo', 'inactivo', 'baja', 'proyecto', 'otro', 'sin datos')) NOT NULL,
+    sector TEXT CHECK (sector IN ('publico', 'privado', 'otro', 'sin datos')) NOT NULL,
+    predio_id INT REFERENCES cuis.predios(id) ON DELETE SET NULL,
+    x NUMERIC,
+    y NUMERIC,
+    gestionado BOOLEAN NOT NULL,
+    institucion TEXT,
+    fecha_creacion TIMESTAMP DEFAULT now()
 );
 ```
 
-Descripción:
-
-•	Almacena información sobre los usuarios que pueden modificar la base de datos, incluyendo su nombre, correo electrónico y rol.
- 
-### 2.7 Tabla edificios
-Almacena la información principal de los edificios, incluyendo su estado, sector, ubicación y coordenadas.
-
+Relación Edificios - Direcciones (Muchos a Muchos, con una principal)
 ```
-CREATE TABLE cuis.edificios (
+CREATE TABLE IF NOT EXISTS cuis.edificios_direcciones (
     id SERIAL PRIMARY KEY,
-    estado estado_edificio NOT NULL,
-    sector sector NOT NULL,
-    direccion_principal_id INT UNIQUE REFERENCES direcciones(id) ON DELETE SET NULL,
-    predio_id INT REFERENCES predios(id),
-    gestionado BOOLEAN,
-    institucion_id INT,
-    x_gkba NUMERIC(20,10),
-    y_gkba NUMERIC(20,10),
-    usuario_modificacion INT REFERENCES usuarios(id) NOT NULL,
-    fecha_modificacion TIMESTAMP NOT NULL
+    edificio_id INT REFERENCES cuis.edificios(id) ON DELETE CASCADE,
+    direccion_id INT REFERENCES cuis.direcciones(id) ON DELETE CASCADE,
+    es_principal BOOLEAN DEFAULT FALSE,
+    CONSTRAINT unica_principal UNIQUE (edificio_id, es_principal)
 );
 ```
 
-Descripción:
-
-•	Registra los detalles básicos de los edificios, incluyendo su estado (activo, inactivo, baja, etc.), sector (público, privado, etc.) y referencias a la dirección principal y predio.
-
-### 2.8 Tabla operativos_relevamiento
-Almacena información sobre los operativos de relevamiento realizados en los edificios.
-
+Tabla de Operativos de Relevamiento
 ```
-CREATE TABLE cuis.operativos_relevamiento (
+CREATE TABLE IF NOT EXISTS cuis.operativos (
     id SERIAL PRIMARY KEY,
-    edificio_id INT REFERENCES edificaciones(id),
-    operativo character varying(16), 
-    fecha_relevamiento TIMESTAMP
+    nombre TEXT NOT NULL UNIQUE
 );
 ```
 
-Descripción:
-
-•	Registra los operativos de relevamiento realizados sobre los edificios, junto con la fecha en que se realizaron.
- 
-### 2.9 Tabla observaciones
-Permite registrar observaciones sobre los edificios realizadas por los usuarios.
-
+Relación Edificios - Operativos
 ```
-CREATE TABLE cuis.observaciones (
+CREATE TABLE IF NOT EXISTS cuis.relevamientos (
     id SERIAL PRIMARY KEY,
-    edificio_id INT REFERENCES edificaciones(id),
-    comentario TEXT,
-    usuario_id INT REFERENCES usuarios(id),  
-    fecha TIMESTAMP
+    edificio_id INT REFERENCES cuis.edificios(id) ON DELETE CASCADE,
+    operativo_id INT REFERENCES cuis.operativos(id) ON DELETE CASCADE,
+    relevado BOOLEAN NOT NULL
 );
 ```
 
-Descripción:
-
-•	Registra comentarios o anotaciones sobre los edificios, junto con el usuario que realizó la observación y la fecha de la misma.
-
-### 2.10 Tabla instituciones
-Almacena información sobre las instituciones que gestionan el edificio
-
+Tabla de Registro de Cambios
 ```
-CREATE TABLE cuis.instituciones (
+CREATE TABLE IF NOT EXISTS cuis.registro_cambios (
     id SERIAL PRIMARY KEY,
-    nombre character varying(64)
+    edificio_id INT REFERENCES cuis.edificios(id) ON DELETE CASCADE,
+    usuario_id INT REFERENCES cuis.usuarios(id) ON DELETE SET NULL,
+    fecha_cambio TIMESTAMP DEFAULT now()
 );
 ```
 
-Descripción:
-
-•	Registra las instituciones que gestionan el edificio.
-
-## 3 Relaciones entre las Tablas
-
-* Tabla edificios: Relaciona un edificio con direcciones, predios, instituciones y usuarios (para seguimiento de modificaciones).
-* Tablas direcciones, predios, coordenadas y parcela: Almacenan información geográfica y administrativa asociada a cada edificio.
-  
-Este diseño facilita la gestión y el análisis de los edificios, proporcionando una estructura flexible y escalable para asociar edificios con múltiples niveles y modalidades, a la vez que mantiene una organización eficiente de los datos.
+Tabla de Observaciones
+```
+CREATE TABLE IF NOT EXISTS cuis.observaciones (
+    id SERIAL PRIMARY KEY,
+    edificio_id INT REFERENCES cuis.edificios(id) ON DELETE CASCADE,
+    usuario_id INT REFERENCES cuis.usuarios(id) ON DELETE SET NULL,
+    observacion TEXT NOT NULL,
+    fecha_observacion TIMESTAMP DEFAULT now()
+);
+```
