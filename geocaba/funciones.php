@@ -6,34 +6,34 @@
 
 function normalizar_calle_altura()
 {
-    include 'conn.php';    
-    $q1 = "SELECT idlistado, calle, altura FROM sig.public.direcciones_norm WHERE geo = true";
+    include 'config.php';    
+    $q1 = "SELECT id, sh_calle, sh_numero FROM public.dirapi WHERE sh_numero SIMILAR TO '[0-9]+' AND estado IS NULL";
     $res1 = pg_query($dbconn, $q1) or die('Error: ' . pg_last_error());
     while($row1 = pg_fetch_array($res1,NULL,PGSQL_ASSOC) )
         {
-            $elaidi = $row1['idlistado'];
+            $elaidi = $row1['id'];
             // API Procesos Geográficos https://ws.usig.buenosaires.gob.ar/rest/normalizar_direcciones?calle=julio%20roca&altura=782&desambiguar=1    
             $peticion1 = str_replace(" ","%20",'https://ws.usig.buenosaires.gob.ar/rest/normalizar_direcciones?'
-                    . 'calle=' . $row1['calle']
-                    . '&altura=' . $row1['altura']
+                    . 'calle=' . $row1['sh_calle']
+                    . '&altura=' . $row1['sh_numero']
                     . '&desambiguar=1');
             $json1 = file_get_contents($peticion1, true);
             $json1_output = json_decode($json1);
             // si el json en TipoResultado trae algo distinto a DireccionNormalizada (error) pongo estado en 1 y salgo del if
             if($json1_output->TipoResultado != 'DireccionNormalizada')
                 {
-                    $q2 = "UPDATE sig.public.direcciones_norm SET estado = 1 WHERE idlistado = " . $elaidi;
+                    $q2 = "UPDATE public.dirapi SET estado = 'API no encontró la direccion' WHERE id = " . $elaidi;
                     $res2 = pg_query($dbconn,$q2);                
                 }
                 else
                 {
                     $cn = str_replace("'","`",$json1_output->DireccionesCalleAltura->direcciones[0]->Calle);
-                    $q3 = "UPDATE sig.public.direcciones_norm SET
-                    cod_calle = " . $json1_output->DireccionesCalleAltura->direcciones[0]->CodigoCalle 
-                    . ", calle_norm = '" . $cn
-                    . "', altura_norm = " . $json1_output->DireccionesCalleAltura->direcciones[0]->Altura 
-                    . ", estado = 2 " 
-                    . " WHERE idlistado = " . $elaidi;
+                    $q3 = "UPDATE public.dirapi SET
+                    api_codigo_calle = " . $json1_output->DireccionesCalleAltura->direcciones[0]->CodigoCalle 
+                    . ", api_calle = '" . $cn
+                    . "', api_altura = " . $json1_output->DireccionesCalleAltura->direcciones[0]->Altura 
+                    . ", estado = null " 
+                    . " WHERE id = " . $elaidi;
                     $res3 = pg_query($dbconn,$q3);
                 }; // if
         }; // while
@@ -45,21 +45,21 @@ function normalizar_calle_altura()
 
 function traer_datos_utiles()
 {
-    include 'conn.php';
-    $q4 = "SELECT idlistado, calle_norm, altura_norm FROM sig.public.direcciones_norm where estado = 2";
+    include 'config.php';
+    $q4 = "SELECT id, api_calle, api_altura FROM public.dirapi where sh_numero SIMILAR TO '[0-9]+' AND estado IS NULL";
     $res4 = pg_query($dbconn, $q4);
     while($row4 = pg_fetch_array($res4,NULL,PGSQL_ASSOC) )
         {
-            $elaidi = $row4['idlistado'];
+            $elaidi = $row4['id'];
             // API Datos Utiles https://ws.usig.buenosaires.gob.ar/datos_utiles?calle=peru&altura=782
             $peticion4 = str_replace(" ","%20",'https://ws.usig.buenosaires.gob.ar/datos_utiles?'
-                    . 'calle=' . $row4['calle_norm'] 
-                    . '&altura=' . $row4['altura_norm']);
+                    . 'calle=' . $row4['api_calle'] 
+                    . '&altura=' . $row4['api_altura']);
             $json4 = file_get_contents($peticion4, true);
             $json4_output = json_decode($json4);
             if(empty($json4_output))
             {
-                $q6 = "UPDATE sig.public.direcciones_norm SET estado = 3 WHERE idlistado = " . $elaidi;
+                $q6 = "UPDATE public.dirapi SET estado = 'API no trajo datos utiles' WHERE id = " . $elaidi;
                 $res6 = pg_query($dbconn,$q6);
             }
             else
@@ -73,17 +73,17 @@ function traer_datos_utiles()
                 if (empty($json4_output->distrito_escolar)){$distrito_escolar = null;}else{$distrito_escolar = $json4_output->distrito_escolar;};
                 if (empty($json4_output->codigo_postal)){$codigo_postal = 9999;}else{$codigo_postal = $json4_output->codigo_postal;};
                 if (empty($json4_output->codigo_postal_argentino)){$codigo_postal_argentino = null;}else{$codigo_postal_argentino = $json4_output->codigo_postal_argentino;};
-                $q5 = "UPDATE sig.public.direcciones_norm SET
-                comuna_norm = '" . $comuna
-                . "', barrio_norm = '" . $barrio
-                . "', comisaria_norm = '" . $comisaria
-                . "', areah_norm = '" . $area_hospitalaria
-                . "', regions_norm = '" . $region_sanitaria
-                . "', de_norm = '" . $distrito_escolar
-                . "', codpos = '" . $codigo_postal
-                . "', codposar = '" . $codigo_postal_argentino
-                . "', estado = 4 "
-                . "WHERE idlistado = " . $elaidi;
+                $q5 = "UPDATE public.dirapi SET
+                api_comuna = '" . $comuna
+                . "', api_barrio = '" . $barrio
+                . "', api_comisaria = '" . $comisaria
+                . "', api_area_hospitalaria = '" . $area_hospitalaria
+                . "', api_region_sanitaria = '" . $region_sanitaria
+                . "', api_distrito_escolar = '" . $distrito_escolar
+                . "', api_codigo_postal = '" . $codigo_postal
+                . "', api_codigo_postal_argentino = '" . $codigo_postal_argentino
+                . "', estado = null "
+                . "WHERE id = " . $elaidi;
                 $res5 = pg_query($dbconn, $q5);
             }; // if
         }; // while
@@ -153,16 +153,16 @@ function traer_datos_de_catastro()
 
 function traer_coordenadas_gkba()
 {
-    include 'conn.php';
-    $q10 = "SELECT idlistado, cod_calle, altura_norm FROM sig.public.direcciones_norm WHERE cod_calle is not null";
+    include 'config.php';
+    $q10 = "SELECT id, api_codigo_calle, api_altura FROM public.dirapi WHERE api_codigo_calle IS NOT NULL";
     $res10 = pg_query($dbconn, $q10);
     while($row10 = pg_fetch_array($res10,NULL,PGSQL_ASSOC) )
         {
-            $elaidi = $row10['idlistado'];
+            $elaidi = $row10['id'];
             // API usig https://ws.usig.buenosaires.gob.ar/geocoder/2.2/geocoding?cod_calle=17071&altura=782&metodo=puertas
             $peticion10 = 'https://ws.usig.buenosaires.gob.ar/geocoder/2.2/geocoding?'
-                    . 'cod_calle=' . $row10['cod_calle']
-                    . '&altura=' . $row10['altura_norm']
+                    . 'cod_calle=' . $row10['api_codigo_calle']
+                    . '&altura=' . $row10['api_altura']
                     . '&metodo=puertas';
             // como devuelve un json mal armado, lo masajeo
             $json10 = file_get_contents($peticion10, true);
@@ -171,15 +171,15 @@ function traer_coordenadas_gkba()
             $json10_output = json_decode($sin2);
             if(empty($json10_output))
                 {
-                    $q11= "UPDATE sig.public.direcciones_norm SET estado = 7 WHERE idlistado = " . $elaidi;
+                    $q11= "UPDATE public.dirapi SET estado = 'API no trajo coordenadas GKBA' WHERE id = " . $elaidi;
                     $res11 = pg_query($dbconn, $q11);
                 }
                 else
                 {
-                    $q12 = "UPDATE sig.public.direcciones_norm SET 
-                    x = " . $json10_output->x
-                    . ", y = " . $json10_output->y
-                    . ", estado = 8 WHERE idlistado = " . $elaidi;
+                    $q12 = "UPDATE public.dirapi SET 
+                    api_x_gkba = " . $json10_output->x
+                    . ", api_y_gkba = " . $json10_output->y
+                    . ", estado = null WHERE id = " . $elaidi;
                     $res12 = pg_query($dbconn, $q12);        
                 }; // if
         }; // while
@@ -191,45 +191,91 @@ function traer_coordenadas_gkba()
 
 function traer_coordenadas_wgs84()
 {
-    include 'conn.php';
-    $q13 = "SELECT id, x_gkba, y_gkba FROM sig.mapa.diruni WHERE x_gkba is not null";
+    include 'config.php';
+    $q13 = "SELECT id, api_x_gkba, api_y_gkba FROM public.dirapi WHERE api_x_gkba is not null";
     $res13 = pg_query($dbconn, $q13);
     while($row13 = pg_fetch_array($res13,NULL,PGSQL_ASSOC) )
         {
             $elaidi = $row13['id'];
             // API usig https://ws.usig.buenosaires.gob.ar/rest/convertir_coordenadas?x=108150.992445&y=101357.282955&output=lonlat
             $peticion13 = 'https://ws.usig.buenosaires.gob.ar/rest/convertir_coordenadas?'
-                    . 'x=' . $row13['x_gkba']
-                    . '&y=' . $row13['y_gkba']
+                    . 'x=' . $row13['api_x_gkba']
+                    . '&y=' . $row13['api_y_gkba']
                     . '&output=lonlat';
             $json13 = file_get_contents($peticion13, False);
             $json13_output = json_decode($json13);
             if(empty($json13_output))
                 {
-                    $q14= "UPDATE sig.mapa.diruni SET estado = 9 WHERE id = " . $elaidi;
+                    $q14= "UPDATE public.dirapi SET estado = 'API no trajo wgs84' WHERE id = " . $elaidi;
                     $res14 = pg_query($dbconn,$q14);
                 }
                 else
                 {
-                    $q15 = "UPDATE sig.mapa.diruni SET 
-                    x_wgs84 = " . $json13_output->resultado->x
-                    . ", y_wgs84 = " . $json13_output->resultado->y
-                    . ", estado = 10 WHERE id = " . $elaidi;
+                    $q15 = "UPDATE public.dirapi SET 
+                    api_x_wgs84 = " . $json13_output->resultado->x
+                    . ", api_y_wgs84 = " . $json13_output->resultado->y
+                    . ", estado = null WHERE id = " . $elaidi;
                     $res15 = pg_query($dbconn, $q15);        
                 }; // if
         }; // while
 }; //funcion
 
-////////////////////////////////////////
-// Función para crear el geom en 4326 //
-////////////////////////////////////////
+/////////////////////////////////
+// Función para crear los geom //
+/////////////////////////////////
 
-function crear_geom4326()
+function crear_geom()
 {
-    include 'conn.php';
+    include 'config.php';
     // hago el geom con postgis
-    $q20 = 'UPDATE sig.mapa.diruni set geom4326 = ST_SetSRID(ST_MakePoint(x_wgs84, y_wgs84),4326) where x_wgs84 is not null and y_wgs84 is not null';
+    $q20 = 'UPDATE public.dirapi set geomwgs84 = ST_SetSRID(ST_MakePoint(api_x_wgs84, api_y_wgs84),4326) where api_x_wgs84 is not null and api_y_wgs84 is not null';
     $res20 = pg_query($dbconn, $q20);
+    $q21 = 'UPDATE public.dirapi set geomgkba = ST_SetSRID(ST_MakePoint(api_x_gkba, api_y_gkba),100006) where api_x_gkba is not null and api_y_gkba is not null';
+    $res21 = pg_query($dbconn, $q21);
 }
+
+
+///////////////////////////////////////
+// Función para traer Datos Útiles 2 //
+///////////////////////////////////////
+
+function traer_datos_utiles_2()
+{
+    include 'config.php';
+    $q44 = "SELECT id, api_calle, api_altura FROM public.dirapi where sh_numero SIMILAR TO '[0-9]+' AND estado IS NULL";
+    $res44 = pg_query($dbconn, $q44);
+    while($row44 = pg_fetch_array($res44,NULL,PGSQL_ASSOC) )
+        {
+            $elaidi = $row44['id'];
+            // API Datos Utiles https://ws.usig.buenosaires.gob.ar/datos_utiles?calle=peru&altura=782
+            $peticion44 = str_replace(" ","%20",'https://ws.usig.buenosaires.gob.ar/datos_utiles?'
+                    . 'calle=' . $row44['api_calle'] 
+                    . '&altura=' . $row44['api_altura']);
+            $json44 = file_get_contents($peticion44, true);
+            $json44_output = json_decode($json44);
+            if(empty($json44_output))
+            {
+                $q46 = "UPDATE public.dirapi SET estado = 'API no trajo datos utiles' WHERE id = " . $elaidi;
+                $res46 = pg_query($dbconn,$q46);
+            }
+            else
+            {
+                // paso los atributos a variables para que no pinchen los que vienen vacíos - Si son integer, ponerle 9999 y no null
+                if (empty($json44_output->comisaria_vecinal)){$comisaria_vecinal = null;}else{$comisaria_vecinal = $json44_output->comisaria_vecinal;};
+                if (empty($json44_output->seccion_catastral)){$seccion_catastral = null;}else{$seccion_catastral = $json44_output->seccion_catastral;};
+                if (empty($json44_output->distrito_economico)){$distrito_economico = null;}else{$distrito_economico = $json44_output->distrito_economico;};
+                if (empty($json44_output->codigo_de_planeamiento_urbano)){$codigo_de_planeamiento_urbano = null;}else{$codigo_de_planeamiento_urbano = $json44_output->codigo_de_planeamiento_urbano;};
+                $q45 = "UPDATE public.dirapi SET
+                api_comisaria_vecinal = '" . $comisaria_vecinal
+                . "', api_seccion_catastral = '" . $seccion_catastral
+                . "', api_distrito_economico = '" . $distrito_economico
+                . "', api_codigo_de_planeamiento_urbano = '" . $codigo_de_planeamiento_urbano
+                . "', estado = null "
+                . "WHERE id = " . $elaidi;
+                $res45 = pg_query($dbconn, $q45);
+            }; // if
+        }; // while
+}; // funcion
+
 
 ?>

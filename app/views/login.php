@@ -1,17 +1,20 @@
 <?php
     session_start();
     require_once('../config/config.php'); // Ruta correcta al archivo config.php
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $email = $_POST['email'];
         $password = $_POST['password'];
+
         // Buscar el usuario en la base de datos
         $sql = "SELECT * FROM cuis.usuarios WHERE email = :email";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->execute();
-        $user = $stmt->fetch();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
         // Verificar si el usuario existe y la contraseña es correcta
-        if ($user && crypt($password, $user['password']) == $user['password']) {
+        if ($user && password_verify($password, $user['password_hash'])) {
             // Iniciar sesión y redirigir
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['nombre'];
