@@ -277,5 +277,47 @@ function traer_datos_utiles_2()
         }; // while
 }; // funcion
 
+/////////////////////////////////////////////////////////////////
+// Función para traer pares de coordenadas WGS84 para los cuis //
+/////////////////////////////////////////////////////////////////
+
+function wgs84_para_cuis()
+{
+    include 'config.php';
+    $q13 = "SELECT id, x_gkba, y_gkba FROM cuis.edificios";
+    $res13 = pg_query($dbconn, $q13);
+    while($row13 = pg_fetch_array($res13,NULL,PGSQL_ASSOC) )
+        {
+            $elaidi = $row13['id'];
+            // API usig https://ws.usig.buenosaires.gob.ar/rest/convertir_coordenadas?x=108150.992445&y=101357.282955&output=lonlat
+            $peticion13 = 'https://ws.usig.buenosaires.gob.ar/rest/convertir_coordenadas?'
+                    . 'x=' . $row13['x_gkba']
+                    . '&y=' . $row13['y_gkba']
+                    . '&output=lonlat';
+            $json13 = file_get_contents($peticion13, False);
+            $json13_output = json_decode($json13);
+            if(empty($json13_output))
+                {
+                    echo "error en " . $elaidi . "<br><br>";
+                }
+                else
+                {
+                    $q15 = "UPDATE cuis.edificios SET 
+                    x_wgs84 = " . $json13_output->resultado->x
+                    . ", y_wgs84 = " . $json13_output->resultado->y
+                    . " WHERE id = " . $elaidi;
+                    $res15 = pg_query($dbconn, $q15);        
+                }; // if
+        }; // while
+}; //funcion
+
+function crear_geom_para_cuis()
+{
+    include 'config.php';
+    // hago el geom con postgis
+    $q20 = 'UPDATE cuis.edificios set geom = ST_SetSRID(ST_MakePoint(x_wgs84, y_wgs84),4326) where x_wgs84 is not null and y_wgs84 is not null';
+    $res20 = pg_query($dbconn, $q20);
+}
+
 
 ?>
