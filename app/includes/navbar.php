@@ -14,7 +14,13 @@
       <!-- Links alineados a la izquierda -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="../views/home.php">Home</a>
+          <a class="nav-link" href="../views/home.php">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="../views/buscar.php">Buscar CUI</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="../views/editar.php">Editar Edificio</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="../views/descargas.php">Descargas</a>
