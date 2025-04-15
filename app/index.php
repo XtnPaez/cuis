@@ -86,7 +86,7 @@
   <body class="d-flex align-items-center py-4 bg-body-tertiary">
   <main class="form-signin w-100 m-auto">
     <form action="views/login.php" method="POST">
-        <img class="mb-4" src="images/eddy_tr.png" alt="UEICEE - MAPA - CUIS" width="100" height="100">
+        <img class="mb-4" src="images/eddy.png" alt="UEICEE - MAPA - CUIS" width="100" height="100">
         <h1 class="h3 mb-3 fw-normal">Inicio de sesión</h1>
         <?php if (isset($_SESSION['error'])): ?>
         <div class="alert alert-danger" role="alert">
