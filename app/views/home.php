@@ -43,7 +43,18 @@
         </div>
       </div>
 
-      <!-- Tarjeta 3: Descargas -->
+      <!-- Tarjeta 3: Actualizaciones -->
+      <div class="col">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">Actualizaciones</h5>
+            <p class="card-text">Agregá o Modificá Predios, Operativos, Direcciones u Observaciones.</p>
+            <a href="actualizaciones.php" class="btn btn-primary mt-auto w-100">Ir a actualizaciones</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tarjeta 4: Descargas -->
       <div class="col">
         <div class="card h-100 shadow-sm">
           <div class="card-body d-flex flex-column">

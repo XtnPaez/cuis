@@ -23,6 +23,9 @@
           <a class="nav-link" href="../views/editar.php">Editar Edificio</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="../views/actualizaciones.php">Actualizaciones</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="../views/descargas.php">Descargas</a>
         </li>
       </ul>
