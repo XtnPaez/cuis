@@ -49,7 +49,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CUIS - Inicio</title>
+  <title>UEICEE : MAPA : CUIS : Actualizaciones</title>
   <link href="../css/bootstrap.min.css" rel="stylesheet">
   <link href="../css/sticky.css" rel="stylesheet">
   <link rel="apple-touch-icon" href="../images/apple-icon-180x180.png" sizes="180x180">

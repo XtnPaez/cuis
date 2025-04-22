@@ -20,13 +20,19 @@
           <a class="nav-link" href="../views/buscar.php">Buscar CUI</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../views/editar.php">Editar Edificio</a>
+          <a class="nav-link" href="../views/editar.php">Editar CUI</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../views/actualizaciones.php">Actualizaciones</a>
+          <a class="nav-link" href="../views/alta.php">Alta de CUI</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="../views/actualizaciones.php">Gestión de Tablas</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="../views/descargas.php">Descargas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="../views/usuarios.php">ABM de Usuarios</a>
         </li>
       </ul>
 

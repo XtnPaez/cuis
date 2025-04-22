@@ -1,0 +1,18 @@
+{
+    "name": "cristian.paez/app",
+    "autoload": {
+        "psr-4": {
+            "CristianPaez\\App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "XtnPaez",
+            "email": "cristian.paez@bue.edu.ar"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^4.2",
+        "phpoffice/phpword": "^1.3"
+    }
+}

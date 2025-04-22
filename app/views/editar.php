@@ -105,7 +105,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Editar Edificio</title>
+  <title>UEICEE : MAPA : CUIS : Editar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="../css/bootstrap.min.css" rel="stylesheet">
   <link href="../css/sticky.css" rel="stylesheet">
