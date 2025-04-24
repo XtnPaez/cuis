@@ -112,6 +112,18 @@ require_once('../config/config.php');
         }
       }
     ?>
+
+    <!-- Div para comentarios y observaciones -->
+    <div class="mt-3 p-3 border border-warning rounded bg-light">
+              <h6 class="text-warning">Pendientes:</h6>
+              <ul class="mb-0">
+                <li>Los archivos que traigan datos desde la base, hay que generarlos dinamicamente y alojarlos. Ahora, para testear4 funciomiento
+                  estan clavados en el codigo y en una carpeta. Ofrecer en la misma card diferentes formatos.</li>
+                <li>Chequear si los cortes pueden generarse atuomaticamente con una funcion en el servidor.</li>
+              </ul>
+            </div>
+
+
   </main>
 
   <?php include('../includes/footer.php'); ?>

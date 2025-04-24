@@ -41,18 +41,50 @@
   }
 
   // Búsqueda por CUI
-  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cui']) && !isset($_POST['confirmar'])) {
-    $cui = $_POST['cui'];
-    $sql = "SELECT * FROM cuis.edificios WHERE cui = :cui";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':cui', $cui, PDO::PARAM_STR);
-    $stmt->execute();
-    $edificio = $stmt->fetch();
+  // Búsqueda por CUI con redirección (PRG)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cui']) && !isset($_POST['confirmar'])) {
+  $cui = $_POST['cui'];
+  $sql = "SELECT * FROM cuis.edificios WHERE cui = :cui";
+  $stmt = $pdo->prepare($sql);
+  $stmt->bindParam(':cui', $cui, PDO::PARAM_STR);
+  $stmt->execute();
+  $edificio = $stmt->fetch();
 
-    if (!$edificio) {
-      $error = "No se encontró ningún edificio con ese CUI.";
-    }
+  if ($edificio) {
+    $_SESSION['edificio'] = $edificio;
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+  } else {
+    $_SESSION['error'] = "No se encontró ningún edificio con ese CUI.";
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
   }
+}
+
+// Recuperar edificio y error si vienen de la sesión (después de redirigir)
+if (isset($_SESSION['edificio'])) {
+  $edificio = $_SESSION['edificio'];
+  unset($_SESSION['edificio']);
+}
+if (isset($_SESSION['error'])) {
+  $error = $_SESSION['error'];
+  unset($_SESSION['error']);
+}
+
+
+    // Si se llega con GET (por redirección), buscar el edificio
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['cui'])) {
+      $cui = $_GET['cui'];
+      $sql = "SELECT * FROM cuis.edificios WHERE cui = :cui";
+      $stmt = $pdo->prepare($sql);
+      $stmt->bindParam(':cui', $cui, PDO::PARAM_STR);
+      $stmt->execute();
+      $edificio = $stmt->fetch();
+
+      if (!$edificio) {
+        $error = "No se encontró ningún edificio con ese CUI.";
+      }
+    }
 
   // Confirmación de modificación
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar']) && $_POST['confirmar'] === 'si') {
@@ -220,9 +252,10 @@
     <div class="mt-3 p-3 border border-warning rounded bg-light">
               <h6 class="text-warning">Pendientes:</h6>
               <ul class="mb-0">
-                <li>Que F5 no recargue.</li>
+                <li>Faltan campos para la versión productiva. Consultar con el equipo.</li>
               </ul>
             </div>
+            <br>
   </main>
 
   <?php include('../includes/footer.php'); ?>
