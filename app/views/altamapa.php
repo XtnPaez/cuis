@@ -22,44 +22,57 @@
     <div class="mt-3">
       <p><strong>Coordenadas:</strong> <span id="latLng">Latitud: -, Longitud: -</span></p>
       <p><strong>Puerta:</strong> <span id="address">No disponible</span></p>
+      <p><strong>Calle:</strong> <span id="calle">No disponible</span></p>
+      <p><strong>Altura:</strong> <span id="altura">No disponible</span></p>
       <p><strong>Parcela:</strong> <span id="parcela">No disponible</span></p>
-      <p><strong>Puerta X:</strong> <span id="puerta">No disponible</span></p>
+      <p><strong>Puerta XGK:</strong> <span id="puerta_x">No disponible</span></p>
+      <p><strong>Puerta YGK:</strong> <span id="puerta_y">No disponible</span></p>
       <p><strong>Calle y Alturas:</strong> <span id="calle_alturas">No disponible</span></p>
     </div>
-
-
-
-
-
     <!-- Div para comentarios y observaciones -->
-<div class="mt-3 p-3 border border-warning rounded bg-light">
+    <div class="mt-3 p-3 border border-warning rounded bg-light">
               <h6 class="text-warning">Pendientes:</h6>
               <ul class="mb-0">
-                <li>Hay que traer los datos de las apis y mostrarlos igual que con direccion.</li>
+                <li>YA CONSEGUÍ PARSEAR LA DIRECCION -> Ahora hay que traer los datos de las apis y mostrarlos igual que con direccion.</li>
                 <li>El campo direccion deberia ser editable para cargar lo que padron nos mande. Poner Observaciones.</li>
               </ul>
             </div>
-
-
-
-
-            
+           
   </main>
-
-
-
-
-
-
   <?php include('../includes/footer.php'); ?>
-
   <script>
     // Inicialización del mapa con OpenStreetMap
     var map = L.map('map').setView([-34.6037, -58.3816], 13);  // Centrado en Buenos Aires
-
+/*
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+
+*/
+
+    L.tileLayer('https://servicios.usig.buenosaires.gob.ar/mapcache/tms/1.0.0/amba_con_transporte_3857@GoogleMapsCompatible/{z}/{x}/{-y}.png ', {
+      attribution: '&copy; CABA Tiles'
+    }).addTo(map);
+
+
+function separarCalleYAltura(direccion) {
+  if (!direccion) return { calle: null, altura: null };
+
+  const match = direccion.trim().match(/^(.*\D)\s+(\d+|S\/N)$/);
+  if (match) {
+    return {
+      calle: match[1].trim(),
+      altura: match[2]
+    };
+  } else {
+    return {
+      calle: direccion.trim(),
+      altura: null
+    };
+  }
+}
+
+
 
     // Agregar un marcador y un popup cuando se haga clic en el mapa
     map.on('click', function(e) {
@@ -88,8 +101,16 @@
         .then(jsonData => {
           // Mostrar los datos de la API debajo de las coordenadas
           document.getElementById("address").textContent = jsonData.puerta || 'No disponible';
+          // Separar calle y altura
+const separados = separarCalleYAltura(jsonData.puerta);
+
+// Mostrar calle y altura separados
+document.getElementById("calle").textContent = separados.calle || 'No disponible';
+document.getElementById("altura").textContent = separados.altura || 'No disponible';
+
           document.getElementById("parcela").textContent = jsonData.parcela || 'No disponible';
-          document.getElementById("puerta").textContent = jsonData.puerta || 'No disponible';
+          document.getElementById("puerta_x").textContent = jsonData.puerta_x || 'No disponible';
+          document.getElementById("puerta_y").textContent = jsonData.puerta_y || 'No disponible';
           document.getElementById("calle_alturas").textContent = jsonData.calle_alturas || 'No disponible';
         })
         .catch(error => {
@@ -99,9 +120,5 @@
         });
     });
   </script>
-
-
-
-
 </body>
 </html>
