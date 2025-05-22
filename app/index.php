@@ -1,4 +1,5 @@
 <?php 
+    // chequeo inicio de sesión
     session_start();
 ?>
 <!DOCTYPE html>
@@ -14,6 +15,7 @@
     <link rel="icon" href="images/favicon-32x32.png" sizes="32x32" type="image/png">
     <link rel="icon" href="images/favicon-16x16.png" sizes="16x16" type="image/png">
     <link rel="icon" href="images/favicon.ico">
+    <!-- Estilo del login -->
     <style>
       .bd-placeholder-img {
         font-size: 1.125rem;
@@ -84,9 +86,9 @@
     </style>
   </head>
   <body class="d-flex align-items-center py-4 bg-body-tertiary">
-  <main class="form-signin w-100 m-auto">
-    <form action="views/login.php" method="POST">
-        <img class="mb-4" src="images/eddy.png" alt="UEICEE - MAPA - CUIS" width="100" height="100">
+    <main class="form-signin w-100 m-auto">
+      <form action="views/login.php" method="POST">
+        <img class="mb-4" src="images/eddy.png" alt="Eddy, la mascota de MAPA" width="100" height="100">
         <h1 class="h3 mb-3 fw-normal">Inicio de sesión</h1>
         <?php if (isset($_SESSION['error'])): ?>
         <div class="alert alert-danger" role="alert">
@@ -94,20 +96,16 @@
         </div>
         <?php endif; ?>
         <div class="form-floating">
-            <input type="email" class="form-control" id="email" name="email" placeholder="Correo electrónico" required>
-            <label for="email">Correo electrónico</label>
+          <input type="email" class="form-control" id="email" name="email" placeholder="Correo electrónico" required>
+          <label for="email">Correo electrónico</label>
         </div>
         <div class="form-floating">
-            <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
-            <label for="password">Contraseña</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
+          <label for="password">Contraseña</label>
         </div>
         <button class="w-100 btn btn-lg btn-primary" type="submit">Iniciar sesión</button>
-    </form>
-  </main>
-  <script src="js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+      </form>
+    </main>
+    <script src="js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   </body>
 </html>
-
-
-
-
