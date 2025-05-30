@@ -29,11 +29,43 @@
       <p><strong>Puerta YGK:</strong> <span id="puerta_y">No disponible</span></p>
       <p><strong>Calle y Alturas:</strong> <span id="calle_alturas">No disponible</span></p>
     </div>
+
+
+
+    <div class="mt-3">
+  <h6>Dirección Normalizada:</h6>
+  <div id="normalizado">Esperando datos...</div>
+</div>
+
+
+
+
+
+
+<!-- Datos útiles del GCBA -->
+<div class="mt-3">
+  <h6 class="text-primary">Datos útiles:</h6>
+  <p><strong>Comuna:</strong> <span id="comuna">No disponible</span></p>
+  <p><strong>Barrio:</strong> <span id="barrio">No disponible</span></p>
+  <p><strong>Comisaría:</strong> <span id="comisaria">No disponible</span></p>
+  <p><strong>Hospital:</strong> <span id="hospital">No disponible</span></p>
+  <p><strong>Región Sanitaria:</strong> <span id="region">No disponible</span></p>
+  <p><strong>Código Postal:</strong> <span id="postal">No disponible</span></p>
+</div>
+
+
+
+
+
+
+
+
+
     <!-- Div para comentarios y observaciones -->
     <div class="mt-3 p-3 border border-warning rounded bg-light">
               <h6 class="text-warning">Pendientes:</h6>
               <ul class="mb-0">
-                <li>YA CONSEGUÍ PARSEAR LA DIRECCION -> Ahora hay que traer los datos de las apis y mostrarlos igual que con direccion.</li>
+                <li>Trae todos los datos para update de direccion? Cuando esto esté chequeado crear el formulario de update.</li>
                 <li>El campo direccion deberia ser editable para cargar lo que padron nos mande. Poner Observaciones.</li>
               </ul>
             </div>
@@ -58,18 +90,31 @@
 function separarCalleYAltura(direccion) {
   if (!direccion) return { calle: null, altura: null };
 
-  const match = direccion.trim().match(/^(.*\D)\s+(\d+|S\/N)$/);
-  if (match) {
+  direccion = direccion.trim();
+
+  // Si tiene " S/N" (sin número), tratamos como caso especial
+  if (direccion.match(/\bS\/N\b/i)) {
     return {
-      calle: match[1].trim(),
-      altura: match[2]
-    };
-  } else {
-    return {
-      calle: direccion.trim(),
-      altura: null
+      calle: direccion.replace(/\bS\/N\b/i, '').trim(),
+      altura: 'S/N'
     };
   }
+
+  // Buscar el último número que podría ser altura
+  const partes = direccion.split(' ');
+  for (let i = partes.length - 1; i >= 0; i--) {
+    if (/^\d+$/.test(partes[i])) {
+      const altura = partes[i];
+      const calle = partes.slice(0, i).join(' ').trim();
+      return { calle, altura };
+    }
+  }
+
+  // Si no se encontró número, devolver calle completa
+  return {
+    calle: direccion,
+    altura: null
+  };
 }
 
 
@@ -88,7 +133,76 @@ function separarCalleYAltura(direccion) {
         .setContent('Latitud: ' + lat.toFixed(6) + '<br>Longitud: ' + lng.toFixed(6))
         .openOn(map);
 
-      // Llamar a la API para obtener la dirección
+      
+      map.on('click', function(e) {
+  var lat = e.latlng.lat;
+  var lng = e.latlng.lng;
+
+  // Mostrar coordenadas
+  document.getElementById("latLng").textContent = "Latitud: " + lat.toFixed(6) + ", Longitud: " + lng.toFixed(6);
+
+  // Limpiar todos los campos antes de consultar nuevas APIs
+  const campos = ["address", "calle", "altura", "parcela", "puerta_x", "puerta_y", "calle_alturas",
+                  "comuna", "barrio", "comisaria", "area_hospitalaria", "region_sanitaria",
+                  "distrito_escolar", "comisaria_vecinal", "seccion_catastral", "codigo_postal"];
+
+  campos.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = 'No disponible';
+  });
+
+  // Mostrar popup en el mapa
+  L.popup()
+    .setLatLng(e.latlng)
+    .setContent('Latitud: ' + lat.toFixed(6) + '<br>Longitud: ' + lng.toFixed(6))
+    .openOn(map);
+
+  // Consultar API Reverse Geocoding
+  fetch(`https://datosabiertos-usig-apis.buenosaires.gob.ar/geocoder/2.2/reversegeocoding?x=${lng}&y=${lat}`)
+    .then(response => response.text())
+    .then(data => {
+      var jsonString = data.replace(/^[(]|[)]$/g, '');
+      return JSON.parse(jsonString);
+    })
+    .then(jsonData => {
+      if (!jsonData || !jsonData.puerta) {
+        throw new Error("No se encontraron datos de dirección.");
+      }
+
+      document.getElementById("address").textContent = jsonData.puerta;
+
+      const separados = separarCalleYAltura(jsonData.puerta);
+      document.getElementById("calle").textContent = separados.calle || 'No disponible';
+      document.getElementById("altura").textContent = separados.altura || 'No disponible';
+      document.getElementById("parcela").textContent = jsonData.parcela || 'No disponible';
+      document.getElementById("puerta_x").textContent = jsonData.puerta_x || 'No disponible';
+      document.getElementById("puerta_y").textContent = jsonData.puerta_y || 'No disponible';
+      document.getElementById("calle_alturas").textContent = jsonData.calle_alturas || 'No disponible';
+
+      // Acá podés enganchar las siguientes APIs usando separados.calle y separados.altura
+    })
+    .catch(error => {
+      console.error('Error al obtener datos:', error);
+      document.getElementById("address").textContent = "No se pudo obtener dirección.";
+    });
+});
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+        // Llamar a la API para obtener la dirección
       fetch(`https://datosabiertos-usig-apis.buenosaires.gob.ar/geocoder/2.2/reversegeocoding?x=${lng}&y=${lat}`)
         .then(response => response.text())  // Cambiar a .text() para manipular el string antes de parsear
         .then(data => {
@@ -102,16 +216,73 @@ function separarCalleYAltura(direccion) {
           // Mostrar los datos de la API debajo de las coordenadas
           document.getElementById("address").textContent = jsonData.puerta || 'No disponible';
           // Separar calle y altura
-const separados = separarCalleYAltura(jsonData.puerta);
-
-// Mostrar calle y altura separados
-document.getElementById("calle").textContent = separados.calle || 'No disponible';
-document.getElementById("altura").textContent = separados.altura || 'No disponible';
-
+          const separados = separarCalleYAltura(jsonData.puerta);
+          // Mostrar calle y altura separados
+          document.getElementById("calle").textContent = separados.calle || 'No disponible';
+          document.getElementById("altura").textContent = separados.altura || 'No disponible';
           document.getElementById("parcela").textContent = jsonData.parcela || 'No disponible';
           document.getElementById("puerta_x").textContent = jsonData.puerta_x || 'No disponible';
           document.getElementById("puerta_y").textContent = jsonData.puerta_y || 'No disponible';
           document.getElementById("calle_alturas").textContent = jsonData.calle_alturas || 'No disponible';
+
+// Nueva consulta a la API de normalización
+if (separados.calle && separados.altura) {
+  const calleParam = encodeURIComponent(separados.calle);
+  const alturaParam = encodeURIComponent(separados.altura);
+
+  fetch(`https://ws.usig.buenosaires.gob.ar/rest/normalizar_direcciones?calle=${calleParam}&altura=${alturaParam}&desambiguar=1`)
+    .then(response => response.json())
+    .then(normalizado => {
+      const resultado = normalizado?.DireccionesCalleAltura?.direcciones?.[0];
+      if (resultado) {
+        // Mostramos el resultado normalizado
+        document.getElementById("normalizado").innerHTML = `
+          <p><strong>Código Calle:</strong> ${resultado.CodigoCalle}</p>
+          <p><strong>Calle Normalizada:</strong> ${resultado.Calle}</p>
+          <p><strong>Altura Normalizada:</strong> ${resultado.Altura}</p>
+        `;
+      } else {
+        document.getElementById("normalizado").innerHTML = `<p class="text-danger">No se pudo normalizar la dirección.</p>`;
+      }
+    })
+    .catch(error => {
+      console.error('Error al normalizar la dirección:', error);
+      document.getElementById("normalizado").innerHTML = `<p class="text-danger">Error al contactar el servicio de normalización.</p>`;
+    });
+}
+
+// Consultar la API de datos útiles con calle y altura
+if (separados.calle && separados.altura) {
+  const calle = encodeURIComponent(separados.calle);
+  const altura = encodeURIComponent(separados.altura);
+  const urlDatosUtiles = `https://ws.usig.buenosaires.gob.ar/datos_utiles?calle=${calle}&altura=${altura}`;
+
+  fetch(urlDatosUtiles)
+    .then(response => response.json())
+    .then(datos => {
+      // Mostrar los datos útiles debajo de las coordenadas
+      document.getElementById("comuna").textContent = datos.comuna || 'No disponible';
+      document.getElementById("barrio").textContent = datos.barrio || 'No disponible';
+      document.getElementById("comisaria").textContent = datos.comisaria || 'No disponible';
+      document.getElementById("hospital").textContent = datos.area_hospitalaria || 'No disponible';
+      document.getElementById("region").textContent = datos.region_sanitaria || 'No disponible';
+      document.getElementById("postal").textContent = datos.codigo_postal || 'No disponible';
+    })
+    .catch(error => {
+      console.error('Error al obtener los datos útiles:', error);
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
         })
         .catch(error => {
           console.error('Error al obtener los datos de la API:', error);
