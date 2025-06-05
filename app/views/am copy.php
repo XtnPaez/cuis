@@ -12,17 +12,14 @@
   <body class="d-flex flex-column min-vh-100">
     <?php include('../includes/navbar.php'); ?>
     <main class="flex-grow-1 container py-5">
-      <!-- SRID de GK 97434 -->
       <!-- Título encima del mapa -->
       <h6 class="text-center mb-4 mt-4">Ingrese en el mapa el punto que busca</h6>
       <!-- Mapa -->
       <div id="map" style="height: 400px;"></div>
       <!-- Panel de datos -->
       <div class="mt-3">
-        <h2>Coordenadas del CUI</h2>
         <p><strong>Coordenadas CUI (WGS84):</strong> <span id="latLng">Latitud: -, Longitud: -</span></p>
         <p><strong>Coordenadas CUI (GK):</strong> <span id="latgkLnggk">Latitud: -, Longitud: -</span></p>
-        <h2>Atributos de la dirección asociada</h2>
         <p><strong>Puerta:</strong> <span id="address">No disponible</span></p>
         <p><strong>Calle:</strong> <span id="calle">No disponible</span></p>
         <p><strong>Altura:</strong> <span id="altura">No disponible</span></p>
@@ -101,13 +98,6 @@
         .openOn(map);
         // Mando el contenido de latLng al HTML
         document.getElementById("latLng").textContent = "Latitud: " + lat.toFixed(6) + ", Longitud: " + lng.toFixed(6);
-
-
-
-
-
-
-
         // Acá debería limpiar el contenido de los demás campos? Por ahora parece que funciona bien sin limpiar
     
         // Consulto la API reversegeocoding para obtener la dirección
@@ -137,40 +127,6 @@
           // Mando el contenido de calle_alturas al HTML
           document.getElementById("calle_alturas").textContent = jsonData.calle_alturas || 'No disponible';
           // Si tengo valores para calle y altura consulto la API de datos útiles
-
-// Mando las coordenadas GK de la dirección para traer las coordenadas WGS84
-          // Modelo: API usig https://ws.usig.buenosaires.gob.ar/rest/convertir_coordenadas?x=108150.992445&y=101357.282955&output=lonlat
-
-          fetch(`https://ws.usig.buenosaires.gob.ar/rest/convertir_coordenadas?x=${jsonData.puerta_x}&y=${jsonData.puerta_y}&output=lonlat`)
-            .then(response => response.json())
-            .then(respuesta => {
-              // Mando el contenido de puerta_xgk al HTML
-              document.getElementById("puerta_xgk").textContent = respuesta.resultado.x || 'No disponible';
-              // Mando el contenido de puerta_ygk al HTML
-              document.getElementById("puerta_ygk").textContent = respuesta.resultado.y || 'No disponible';
-            })
-            .catch(error => {
-              console.error('Error al obtener datos útiles:', error);
-              // Mostrar mensaje de error en el HTML
-              document.getElementById("address").textContent = "Error al obtener los datos.";
-            })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           if (separados.calle && separados.altura) {
             const calle = encodeURIComponent(separados.calle);
             const altura = encodeURIComponent(separados.altura);
@@ -197,19 +153,9 @@
               document.getElementById("address").textContent = "Error al obtener los datos.";
             })
           }
-            
-
-
-
-
-
-
-
-
-
-
-
-
+          // Mando las coordenadas GK de la dirección para traer las coordenadas WGS84
+          // Modelo: API usig https://ws.usig.buenosaires.gob.ar/rest/convertir_coordenadas?x=108150.992445&y=101357.282955&output=lonlat
+          
         
           
         })
