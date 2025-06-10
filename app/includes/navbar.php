@@ -34,6 +34,9 @@
         <li class="nav-item">
           <a class="nav-link" href="../views/usuarios.php">ABM de Usuarios</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="../views/mapa.php">Mapa</a>
+        </li>
       </ul>
 
       <!-- Bienvenida + Logout alineado a la derecha -->

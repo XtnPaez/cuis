@@ -82,6 +82,16 @@
             </div>
           </div>
         </div>
+        <!-- Tarjeta 7: Mapa -->
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">Mapa</h5>
+              <p class="card-text">Visualizador de Capas geográficas de MAPA.</p>
+              <a href="mapa.php" class="btn btn-primary mt-auto w-100">Ir a mapa</a>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
     <!-- Traigo footer -->
