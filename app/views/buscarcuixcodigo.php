@@ -69,7 +69,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UEICEE : MAPA : CUIS : Buscar</title>
+    <title>UEICEE : MAPA : CUIS : Buscar por Código</title>
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/sticky.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -144,18 +144,19 @@
           </div><!-- termimna mapa -->
         </div>
       <?php endif; ?>
-    <!-- Div para comentarios y observaciones -->
-            <div class="mt-3 p-3 border border-warning rounded bg-light">
-              <h6 class="text-warning">Pendientes:</h6>
-              <ul class="mb-0">
-                <li>Agregar las direcciones asociadas al CUI. No se completó bien la base y ahora tenemos solo una para cada CUI.</li>
-                <li>Traer listado de CUEANEXOS asociados a CUI.</li>
-                <li>Traer datos de RENIE.</li>
-                <li>Buscar CUI por dirección: mostrar el listado de direcciones aproximadas a la buscada con su nuemro de cui y un link. al hacer click en el link, se muestra la info</li>
-              </ul>
-            </div><!-- termina pendientes -->  
+      <!-- Div para comentarios y observaciones -->
+      <div class="mt-3 p-3 border border-warning rounded bg-light">
+        <h6 class="text-warning">Pendientes:</h6>
+        <ul class="mb-0">
+          <li>Agregar las direcciones asociadas al CUI. No se completó bien la base y ahora tenemos solo una para cada CUI.</li>
+          <li>Traer listado de CUEANEXOS asociados a CUI.</li>
+          <li>Traer datos de RENIE.</li>
+          <li>Buscar CUI por dirección: mostrar el listado de direcciones aproximadas a la buscada con su nuemro de cui y un link. al hacer click en el link, se muestra la info</li>
+        </ul>
+      </div><!-- termina pendientes -->
     </main>
     <!-- traigo footer -->
     <?php include('../includes/footer.php'); ?>
+    <script src="../js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

@@ -81,7 +81,6 @@
     <link rel="apple-touch-icon" href="../images/apple-icon-180x180.png" sizes="180x180">
     <link rel="icon" href="../images/favicon-32x32.png" sizes="32x32" type="image/png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
     </head>
     <body class="d-flex flex-column min-vh-100">
         <!-- traigo el navbar -->
@@ -236,5 +235,6 @@
     </div>
   </main>
   <?php include('../includes/footer.php'); ?>
+  <script src="../js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

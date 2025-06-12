@@ -44,5 +44,6 @@
     <?php include('../includes/footer.php'); ?>    
     <!-- Mapa -->
     <script src="../js/mapa.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

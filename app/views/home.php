@@ -22,17 +22,27 @@
     <?php include('../includes/navbar.php'); ?>
     <main class="container mt-5 pt-5 flex-grow-1">
       <div class="row row-cols-1 row-cols-md-3 g-4">
-        <!-- Tarjeta 1: Buscar CUI -->
+        <!-- Tarjeta 1: Buscar CUI por Código -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
-              <h5 class="card-title">Buscar CUI</h5>
+              <h5 class="card-title">Buscar CUI por Código</h5>
               <p class="card-text">Ingresá un Código Único de Infraestructura (CUI) o una Dirección y accedé a toda la información disponible del edificio educativo.</p>
-              <a href="buscar.php" class="btn btn-primary mt-auto w-100">Ir a buscar</a>
+              <a href="buscarcuixcodigo.php" class="btn btn-primary mt-auto w-100">Ir a buscar por código</a>
             </div>
           </div>
         </div>
-        <!-- Tarjeta 2: Editar CUI -->
+        <!-- Tarjeta 2: Buscar CUI por Calle y Altura -->
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">Buscar CUI por Calle y Altura</h5>
+              <p class="card-text">Ingresá Calle y Altura y accedé a la info del CUI asociado a ella. Si no la encontramos, te vamos a mostrar CUIs en un radio de 100 mts.</p>
+              <a href="buscarcuixcallealtura.php" class="btn btn-primary mt-auto w-100">Ir a buscar por calle y altura</a>
+            </div>
+          </div>
+        </div>
+        <!-- Tarjeta 3: Editar CUI -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -42,7 +52,7 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 3: Alta de CUI -->
+        <!-- Tarjeta 4: Alta de CUI -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -52,7 +62,7 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 4: Gestión de Tablas -->
+        <!-- Tarjeta 5: Gestión de Tablas -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -62,7 +72,7 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 5: Descargas -->
+        <!-- Tarjeta 6: Descargas -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -72,7 +82,7 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 6: Usuarios -->
+        <!-- Tarjeta 7: Usuarios -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -82,7 +92,7 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 7: Mapa -->
+        <!-- Tarjeta 8: Mapa -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -96,5 +106,6 @@
     </main>
     <!-- Traigo footer -->
     <?php include('../includes/footer.php'); ?>
+    <script src="../js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
