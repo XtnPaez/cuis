@@ -151,7 +151,6 @@
           <li>Agregar las direcciones asociadas al CUI. No se completó bien la base y ahora tenemos solo una para cada CUI.</li>
           <li>Traer listado de CUEANEXOS asociados a CUI.</li>
           <li>Traer datos de RENIE.</li>
-          <li>Buscar CUI por dirección: mostrar el listado de direcciones aproximadas a la buscada con su nuemro de cui y un link. al hacer click en el link, se muestra la info</li>
         </ul>
       </div><!-- termina pendientes -->
     </main>
