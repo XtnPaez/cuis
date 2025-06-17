@@ -48,7 +48,7 @@
             <div class="card-body d-flex flex-column">
               <h5 class="card-title">Editar CUI</h5>
               <p class="card-text">Modificá los datos de un edificio educativo ingresando su CUI.</p>
-              <a href="editar.php" class="btn btn-primary mt-auto w-100">Ir a editar</a>
+              <a href="editar.php" class="btn btn-primary mt-auto w-100">Ir a editar CUI</a>
             </div>
           </div>
         </div>
@@ -58,7 +58,7 @@
             <div class="card-body d-flex flex-column">
               <h5 class="card-title">Alta de CUI</h5>
               <p class="card-text">Dar el Alta de un nuevo edificio educativo.</p>
-              <a href="alta.php" class="btn btn-primary mt-auto w-100">Ir a alta</a>
+              <a href="alta.php" class="btn btn-primary mt-auto w-100">Ir a dar de alta un CUI</a>
             </div>
           </div>
         </div>

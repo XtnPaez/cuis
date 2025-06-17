@@ -1,0 +1,33 @@
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
+
+CREATE SERVER padron_nacion_srv
+  FOREIGN DATA WRAPPER postgres_fdw
+  OPTIONS (host 'localhost', dbname 'padron_nacion', port '5432');
+
+CREATE USER MAPPING FOR postgres
+  SERVER padron_nacion_srv
+  OPTIONS (user 'postgres', password 'Qatarairways');
+
+CREATE SCHEMA IF NOT EXISTS padronnacion_fdw;
+
+IMPORT FOREIGN SCHEMA public
+  LIMIT TO (domicilio, localizacion_domicilio, localizacion, establecimiento, responsable)
+  FROM SERVER padron_nacion_srv
+  INTO padronnacion_fdw;
+
+SELECT 
+  dom.cui,
+  est.cue,
+  loc.anexo,
+  est.nombre,
+  loc.codigo_jurisdiccional,
+  loc.telefono,
+  initcap(res.apellido) as apellidor,
+  initcap(res.nombre) as nombrer,
+  lower(res.email) as email
+FROM padronnacion_fdw.domicilio dom
+JOIN padronnacion_fdw.localizacion_domicilio ldo ON dom.id_domicilio = ldo.id_domicilio
+JOIN padronnacion_fdw.localizacion loc ON loc.id_localizacion = ldo.id_localizacion	
+JOIN padronnacion_fdw.establecimiento est ON est.id_establecimiento = loc.id_establecimiento
+JOIN padronnacion_fdw.responsable res ON res.id_responsable = est.id_responsable
+WHERE dom.cui = '0200201'
