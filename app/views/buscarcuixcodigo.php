@@ -50,28 +50,28 @@
     if ($resultado) {
       $_SESSION['busqueda_cui'] = $resultado;
       // Segunda consulta: traer los CUEANEXOS del CUI
-      $sqlCueAnexos = "SELECT 
-        dom.cui,
-        est.cue,
-        loc.anexo,
-        est.nombre,
-        loc.codigo_jurisdiccional,
-        loc.telefono,
-        initcap(res.apellido) as apellidor,
-        initcap(res.nombre) as nombrer,
-        lower(res.email) as email
-      FROM padronnacion_fdw.domicilio dom
-      JOIN padronnacion_fdw.localizacion_domicilio ldo ON dom.id_domicilio = ldo.id_domicilio
-      JOIN padronnacion_fdw.localizacion loc ON loc.id_localizacion = ldo.id_localizacion	
-      JOIN padronnacion_fdw.establecimiento est ON est.id_establecimiento = loc.id_establecimiento
-      JOIN padronnacion_fdw.responsable res ON res.id_responsable = est.id_responsable
-      WHERE TRIM(dom.cui) = :cui_str";
-      $stmtCue = $pdo->prepare($sqlCueAnexos);
-      $cui_str = str_pad(trim($_POST['cui']), 7, "0", STR_PAD_LEFT); // Asegura ceros a la izquierda y trim
-      $stmtCue->bindParam(':cui_str', $cui_str, PDO::PARAM_STR);
-      $stmtCue->execute();
-      $cueanexos = $stmtCue->fetchAll();
-      $_SESSION['cueanexos'] = $cueanexos;
+      $sqlCueAnexos = " SELECT 
+                          dom.cui,
+                          est.cue,
+                          loc.anexo,
+                          est.nombre,
+                          loc.codigo_jurisdiccional,
+                          loc.telefono,
+                          initcap(res.apellido) as apellidor,
+                          initcap(res.nombre) as nombrer,
+                          lower(res.email) as email
+                        FROM padronnacion_fdw.domicilio dom
+                        JOIN padronnacion_fdw.localizacion_domicilio ldo ON dom.id_domicilio = ldo.id_domicilio
+                        JOIN padronnacion_fdw.localizacion loc ON loc.id_localizacion = ldo.id_localizacion	
+                        JOIN padronnacion_fdw.establecimiento est ON est.id_establecimiento = loc.id_establecimiento
+                        JOIN padronnacion_fdw.responsable res ON res.id_responsable = est.id_responsable
+                        WHERE TRIM(dom.cui) = :cui_str";
+                        $stmtCue = $pdo->prepare($sqlCueAnexos);
+                        $cui_str = str_pad(trim($_POST['cui']), 7, "0", STR_PAD_LEFT); // Asegura ceros a la izquierda y trim
+                        $stmtCue->bindParam(':cui_str', $cui_str, PDO::PARAM_STR);
+                        $stmtCue->execute();
+                        $cueanexos = $stmtCue->fetchAll();
+                        $_SESSION['cueanexos'] = $cueanexos;
     } else {
       $_SESSION['error_cui'] = "No se encontró ningún edificio con el CUI ingresado.";
     }
@@ -140,6 +140,9 @@
           <button class="nav-link" id="dires-tab" data-bs-toggle="tab" data-bs-target="#dires" type="button" role="tab">Direcciones Asociadas</button>
         </li>
         <li class="nav-item" role="presentation">
+          <button class="nav-link" id="renie-tab" data-bs-toggle="tab" data-bs-target="#renie" type="button" role="tab">Datos de RENIE</button>
+        </li>
+        <li class="nav-item" role="presentation">
           <button class="nav-link" id="map-tab" data-bs-toggle="tab" data-bs-target="#mapa" type="button" role="tab">Mapa</button>
         </li>
       </ul>
@@ -180,47 +183,56 @@
           </div>
         </div>
         <!-- CUEANEXOS -->
-<div class="tab-pane fade" id="cueanexos" role="tabpanel">
-  <div class="card shadow-sm mb-3">
-    <div class="card-body">
-      <?php if (!empty($cueanexos)): ?>
-      <div class="table-responsive">
-        <table class="table table-sm table-striped">
-          <thead class="table-dark">
-            <tr>
-              <th>CUE</th>
-              <th>Anexo</th>
-              <th>Nombre</th>
-              <th>Jurisdiccional</th>
-              <th>Teléfono</th>
-              <th>Responsable</th>
-              <th>Email</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($cueanexos as $fila): ?>
-            <tr>
-              <td><?= htmlspecialchars($fila['cue']) ?></td>
-              <td><?= htmlspecialchars($fila['anexo']) ?></td>
-              <td><?= htmlspecialchars($fila['nombre']) ?></td>
-              <td><?= htmlspecialchars($fila['codigo_jurisdiccional']) ?></td>
-              <td><?= htmlspecialchars($fila['telefono']) ?></td>
-              <td><?= htmlspecialchars($fila['apellidor'] . ', ' . $fila['nombrer']) ?></td>
-              <td><?= htmlspecialchars($fila['email']) ?></td>
-            </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
-      </div>
-      <?php else: ?>
-        <p class="text-muted">No se encontraron CUEANEXOS asociados a este CUI.</p>
-      <?php endif; ?>
-    </div>
-  </div>
-</div>
-
+        <div class="tab-pane fade" id="cueanexos" role="tabpanel">
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <?php if (!empty($cueanexos)): ?>
+              <div class="table-responsive">
+                <table class="table table-sm table-striped">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>CUE</th>
+                      <th>Anexo</th>
+                      <th>Nombre</th>
+                      <th>Jurisdiccional</th>
+                      <th>Teléfono</th>
+                      <th>Responsable</th>
+                      <th>Email</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($cueanexos as $fila): ?>
+                    <tr>
+                      <td><?= htmlspecialchars($fila['cue']) ?></td>
+                      <td><?= htmlspecialchars($fila['anexo']) ?></td>
+                      <td><?= htmlspecialchars($fila['nombre']) ?></td>
+                      <td><?= htmlspecialchars($fila['codigo_jurisdiccional']) ?></td>
+                      <td><?= htmlspecialchars($fila['telefono']) ?></td>
+                      <td><?= htmlspecialchars($fila['apellidor'] . ', ' . $fila['nombrer']) ?></td>
+                      <td><?= htmlspecialchars($fila['email']) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+              <?php else: ?>
+                <p class="text-muted">No se encontraron CUEANEXOS asociados a este CUI.</p>
+              <?php endif; ?>
+            </div>
+          </div>
+        </div>
         <!-- Direcciones Asociadas -->
         <div class="tab-pane fade" id="dires" role="tabpanel">
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Calle:</strong> <?= htmlspecialchars($resultado['calle']) ?></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- Datos de RENIE -->
+        <div class="tab-pane fade" id="renie" role="tabpanel">
           <div class="card shadow-sm mb-3">
             <div class="card-body">
               <ul class="list-group list-group-flush">
