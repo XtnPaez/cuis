@@ -1,73 +1,19 @@
 <?php
-  // chequeo el inicio de sesión
-  session_start();
-  // traigo la conexion
-  require_once('../config/config.php');
-  // traigo las funciones de búsqueda
-  require_once('../includes/funciones_busqueda.php'); 
-  // inicializo las variables
-  $resultado = null;
-  $error = null;
-  // Procesamiento del POST
-  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cui'])) {
-    $cui = $_POST['cui'];
-    $resultado = buscarCUI($pdo, $cui);
-    if ($resultado) {
-      $_SESSION['busqueda_cui'] = $resultado;
-      $cueanexos = buscarCueAnexos($pdo, $cui);
-      $_SESSION['cueanexos'] = $cueanexos;
-    } else {
-      $_SESSION['error_cui'] = "No se encontró ningún edificio con el CUI ingresado.";
-    }
-    header("Location: " . $_SERVER['PHP_SELF']);
+  require_once '../config/config.php';
+  require_once 'funciones_busqueda.php';
+  $cui = $_GET['cui'] ?? '';
+  if (!$cui) {
+    echo "<div class='alert alert-warning'>CUI no especificado.</div>";
     exit;
   }
-  // GET después del redirect
-  if (isset($_SESSION['busqueda_cui'])) {
-    $resultado = $_SESSION['busqueda_cui'];
-    unset($_SESSION['busqueda_cui']);
-    if (isset($_SESSION['cueanexos'])) {
-    $cueanexos = $_SESSION['cueanexos'];
-    unset($_SESSION['cueanexos']);
-    } else {
-        $cueanexos = [];
-    }
-  }
-  if (isset($_SESSION['error_cui'])) {
-    $error = $_SESSION['error_cui'];
-    unset($_SESSION['error_cui']);
+  $datos = buscarCUI($pdo, $cui);
+  $resultado = $datos;
+  $cueanexos = buscarCUEanexos($pdo, $cui);
+  if (!$datos) {
+    echo "<div class='alert alert-danger'>No se encontraron datos para el CUI ingresado.</div>";
+    exit;
   }
 ?>
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UEICEE : MAPA : CUIS : Buscar</title>
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
-    <link href="../css/sticky.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="apple-touch-icon" href="../images/apple-icon-180x180.png" sizes="180x180">
-    <link rel="icon" href="../images/favicon-32x32.png" sizes="32x32" type="image/png">
-  </head>
-  <body class="d-flex flex-column min-vh-100">
-    <!-- traigo el navbar -->
-    <?php include('../includes/navbar.php'); ?>
-    <main class="flex-grow-1 container py-5">
-      <h2 class="text-center mb-5 mt-4">Buscar CUI por código</h2>
-      <form method="POST" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="mb-4">
-        <div class="input-group">
-          <input type="number" name="cui" class="form-control" placeholder="Ingresá el CUI" required>
-          <button class="btn btn-primary" type="submit">Buscar</button>
-        </div>
-      </form>
-      <!-- Mensaje de error si lo hay -->
-      <?php if ($error): ?>
-      <div class="alert alert-danger"><?= $error ?></div>
-      <?php endif; ?>
-      <!-- Mostrar los resultados cuando no hay error -->
-      <?php if ($resultado): ?>
       <!-- Pestañas -->
       <ul class="nav nav-tabs mb-3" id="cuiTabs" role="tablist">
         <li class="nav-item" role="presentation">
@@ -84,9 +30,6 @@
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="renie-tab" data-bs-toggle="tab" data-bs-target="#renie" type="button" role="tab">Datos de RENIE</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="map-tab" data-bs-toggle="tab" data-bs-target="#mapa" type="button" role="tab">Mapa</button>
         </li>
       </ul>
       <!-- Contenido de las pestañas -->
@@ -184,56 +127,7 @@
             </div>
           </div>
         </div>
-        <!-- Mapa -->
-        <div class="tab-pane fade" id="mapa" role="tabpanel">
-          <div id="map" style="height: 400px;" class="rounded shadow-sm w-100"></div>
-            <script>
-              const coord = [<?= $resultado['y_wgs84'] ?>, <?= $resultado['x_wgs84'] ?>];
-              const direccion = "<?= htmlspecialchars($resultado['calle']) . ' ' . htmlspecialchars($resultado['altura']) ?>";
-              const map = L.map('map').setView(coord, 16);
-              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors | UEICEE | MAPA'
-              }).addTo(map);
-              const circle = L.circle(coord, {
-                color: 'orange',
-                fillColor: 'yellow',
-                fillOpacity: 0.5,
-                radius: 15
-              }).addTo(map);
-              circle.bindPopup("CUI: <?= htmlspecialchars($resultado['cui']) ?><br>Dirección: " + direccion);
-            </script>
-        </div>
-      </div> <!-- termina contenido de las pestañas -->
-      <?php endif; ?>
-      <!-- Pendientes -->
-      <div class="mt-3 p-3 border border-warning rounded bg-light">
-        <h6 class="text-warning">Pendientes:</h6>
-        <ul class="mb-0">
-          <li><b>REVISAR.</b><br>Agregar las direcciones asociadas al CUI. <br>La query parece ser esta : <br>
-            select aso.calle, aso.altura<br>
-            from cuis.edificios edi<br>
-            join cuis.edificios_direcciones dir on edi.id = dir.edificio_id<br>
-            join cuis.direcciones aso on dir.direccion_id = aso.id<br>
-            where edi.cui = '200215'. <br>Pero la tabla puede estar mal poblada.<br>
-          </li>
-          <li>Traer datos de RENIE.</li>
-          <li>Traer datos de parcela.</li>
-        </ul>
-      </div><!-- termina pendientes -->
-    </main>
-    <!-- traigo footer -->
-    <?php include('../includes/footer.php'); ?>
-    <script>
-      // Leaflet: corregir tamaño del mapa cuando se activa la pestaña
-      const cuiTabs = document.getElementById('cuiTabs');
-      cuiTabs.addEventListener('shown.bs.tab', function (event) {
-        if (event.target.id === 'map-tab') {
-          setTimeout(() => {
-            map.invalidateSize(); // Corrige el tamaño al mostrarse
-          }, 100); // pequeño delay para asegurar render
-        }
-      });
-    </script>
-    <script src="../js/bootstrap.bundle.min.js"></script>
-  </body>
-</html>
+      </div> <!-- termina contenido de las pestañas -->  
+      
+      
+      
