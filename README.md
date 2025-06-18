@@ -95,3 +95,26 @@ usuario
 passwpord
 
 5432
+
+#### BKP
+
+# Backups PostgreSQL
+
+Este repositorio contiene scripts y documentación para restaurar las bases de datos del proyecto.
+
+## Backups disponibles
+
+Los archivos de respaldo se encuentran en Google Drive:
+
+- 🔸 [Descargar backups)]([https://drive.google.com/uc?id=XXXXXXXXXXX&export=download](https://drive.google.com/drive/folders/1sWr3I1TgtAHMXomZxwaIM5HqupFoR4Rb?usp=sharing))
+
+> ⚠️ Nota: Solo personas autorizadas pueden acceder a estos archivos.
+
+#### Restauración
+
+1. Descargar el archivo `.backup`
+2. Abrir pgAdmin > Seleccionar base de datos > Restore
+3. Seleccionar el archivo `.backup`
+4. Ejecutar
+
+
