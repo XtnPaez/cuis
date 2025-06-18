@@ -274,6 +274,7 @@
             where edi.cui = '200215'. <br>Pero la tabla puede estar mal poblada.<br>
           </li>
           <li>Traer datos de RENIE.</li>
+          <li>Traer datos de parcela.</li>
         </ul>
       </div><!-- termina pendientes -->
     </main>
