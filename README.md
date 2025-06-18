@@ -108,7 +108,9 @@ Los archivos de respaldo se encuentran en Google Drive:
 
 - [Descargar backups](https://drive.google.com/drive/folders/1sWr3I1TgtAHMXomZxwaIM5HqupFoR4Rb?usp=sharing)
 
-> ⚠️ Nota: Solo personas autorizadas pueden acceder a estos archivos. Recomiendo CLICK EN EL BOTON DERECHO > ABRIR EN PESTAÑA APARTE PARA NO SALIR DE GITHUB
+> Nota: Solo personas autorizadas pueden acceder a estos archivos.
+
+> Recomiendo CLICK EN EL BOTON DERECHO > ABRIR EN PESTAÑA APARTE PARA NO SALIR DE GITHUB
 
 #### Restauración
 
