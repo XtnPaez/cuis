@@ -106,9 +106,9 @@ Este repositorio contiene scripts y documentación para restaurar las bases de d
 
 Los archivos de respaldo se encuentran en Google Drive:
 
-- <a href="https://drive.google.com/drive/folders/1sWr3I1TgtAHMXomZxwaIM5HqupFoR4Rb?usp=sharing" target="_blank">Descargar backups</a>
+- [Descargar backups](https://drive.google.com/drive/folders/1sWr3I1TgtAHMXomZxwaIM5HqupFoR4Rb?usp=sharing)
 
-> ⚠️ Nota: Solo personas autorizadas pueden acceder a estos archivos.
+> ⚠️ Nota: Solo personas autorizadas pueden acceder a estos archivos. Recomiendo CLICK EN EL BOTON DERECHO > ABRIR EN PESTAÑA APARTE PARA NO SALIR DE GITHUB
 
 #### Restauración
 
