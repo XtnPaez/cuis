@@ -121,6 +121,7 @@
           <li>Poblar la tabla puertas.</li>
           <li>Poblar correctamente la tabla direcciones.</li>
           <li>Vamos a dejar para el final la conexión con la base RENIE en espera del DER de Desarrollo.</li>
+          <li>Mejorar el modo de query para relevamientos.</li>
         </ul>
       </div><!-- termina pendientes -->
 

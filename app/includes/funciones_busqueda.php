@@ -1,38 +1,27 @@
 <?php
 function buscarCUI($pdo, $cui) {
   $sql = "SELECT 
-            e.id,
-            e.cui,
-            e.estado,
-            e.sector,
-            CASE WHEN e.institucion is null THEN 'Sin Institución Asociada' ELSE e.institucion END as institucion,
-            CASE WHEN e.gestionado = true THEN 'Gestionado' ELSE 'No Gestionado' END as gestionado,
-            e.x_gkba,
-            e.y_gkba,
-            e.x_wgs84,
-            e.y_wgs84,
-            CASE WHEN pre.cup is null THEN 'Sin Predio' ELSE pre.cup END as codpre,
+            edi.cui, UPPER(edi.estado) as estado, UPPER(edi.sector) as sector, 
+              CASE WHEN edi.institucion is null THEN 'Sin Institución Asociada' ELSE edi.institucion END as institucion,
+              CASE WHEN edi.gestionado = true THEN 'Gestionado' ELSE 'No Gestionado' END as gestionado, edi.x_gkba, edi.y_gkba,
+              dir.codigo_calle, dir.calle, dir.altura, 
+            CASE WHEN pre.cup is null THEN 'Sin Predio' ELSE pre.cup END as codpre, 
             CASE WHEN pre.nombre is null THEN 'Sin Predio' ELSE pre.nombre END as predio,
-            d.calle,
-            d.altura,
-            ua.comuna,
-            ua.barrio,
-            ua.comisaria,
-            ua.area_hospitalaria,
-            ua.region_sanitaria,
-            ua.distrito_escolar,
-            ua.comisaria_vecinal,
-            ua.codigo_postal,
-            ua.codigo_postal_argentino,
-            rel.operativo_1 as op1,
-            rel.operativo_2 as op2
-          FROM cuis.edificios e
-          LEFT JOIN cuis.predios pre ON e.predio_id = pre.id
-          JOIN cuis.edificios_direcciones ed ON e.id = ed.edificio_id
-          JOIN cuis.direcciones d ON ed.direccion_id = d.id
-          LEFT JOIN cuis.v_edificios_relevamientos rel ON rel.id_edificio = e.id
-          LEFT JOIN cuis.ubicacion_administrativa ua ON d.ubicacion_administrativa_id = ua.id
-          WHERE e.cui = :cui";
+            edr.operativo_1, edr.operativo_2,
+            par.smp, par.superficie_total, par.superficie_cubierta, par.frente, par.fondo, par.propiedad_horizontal, par.pisos_bajo_rasante, 
+              par.pisos_sobre_rasante, 
+            uba.comuna, uba.barrio, uba.comisaria, uba.area_hospitalaria, uba.region_sanitaria, uba.distrito_escolar, uba.comisaria_vecinal, 
+              uba.seccion_catastral, uba.codigo_postal, uba.codigo_postal_argentino,
+            coo.x_wgs84, coo.y_wgs84
+          FROM cuis.edificios edi
+          left join cuis.edificios_direcciones edd on edi.id = edd.edificio_id
+          left join cuis.predios pre on edi.predio_id = pre.id
+          left join cuis.v_edificios_relevamientos edr on edi.cui = edr.cui
+          left join cuis.direcciones dir on edd.direccion_id = dir.id
+          left join cuis.parcelas par on dir.parcela_id = par.id
+          left join cuis.ubicacion_administrativa uba on dir.ubicacion_administrativa_id = uba.id
+          left join cuis.coordenadas coo on dir.coordenadas_id = coo.id
+          WHERE edi.cui = :cui";
   $stmt = $pdo->prepare($sql);
   $stmt->bindParam(':cui', $cui, PDO::PARAM_INT);
   $stmt->execute();

@@ -71,10 +71,13 @@
       <!-- Pestañas -->
       <ul class="nav nav-tabs mb-3" id="cuiTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#edificio" type="button" role="tab">Edificio</button>
+          <button class="nav-link active" id="edificio-tab" data-bs-toggle="tab" data-bs-target="#edificio" type="button" role="tab">Edificio</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#geolocalizacion" type="button" role="tab">Geolocalización</button>
+          <button class="nav-link" id="operativos-tab" data-bs-toggle="tab" data-bs-target="#operativos" type="button" role="tab">Operativos</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="parcela-tab" data-bs-toggle="tab" data-bs-target="#parcela" type="button" role="tab">Parcela</button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="cueanexos-tab" data-bs-toggle="tab" data-bs-target="#cueanexos" type="button" role="tab">CUEANEXOS en el CUI</button>
@@ -96,31 +99,55 @@
           <div class="card shadow-sm mb-3">
             <div class="card-body">
               <p><strong>CUI:</strong> <?= htmlspecialchars($resultado['cui']) ?></p>
+              <p><strong>Dirección principal - Calle:</strong> <?= htmlspecialchars($resultado['calle']) ?></p>
+              <p><strong>Dirección principal - Altura:</strong> <?= htmlspecialchars($resultado['altura']) ?></p>
               <p><strong>Estado:</strong> <?= htmlspecialchars($resultado['estado']) ?></p>
               <p><strong>Sector:</strong> <?= htmlspecialchars($resultado['sector']) ?></p>
               <p><strong>Institución:</strong> <?= htmlspecialchars($resultado['institucion']) ?></p>
               <p><strong>Gestionado:</strong> <?= htmlspecialchars($resultado['gestionado']) ?></p>
-              <p><strong>Predio:</strong> <?= htmlspecialchars($resultado['codpre']) ?> - <?= htmlspecialchars($resultado['predio']) ?></p>
+              <p><strong>Código de Predio:</strong> <?= htmlspecialchars($resultado['codpre']) ?></p>
+              <p><strong>Nombre del Predio:</strong> <?= htmlspecialchars($resultado['predio']) ?></p>
+              <p><strong>Comuna:</strong> <?= htmlspecialchars($resultado['comuna']) ?></p>
+              <p><strong>Barrio:</strong> <?= htmlspecialchars($resultado['barrio']) ?></p>
+              <p><strong>Código Postal:</strong> <?= htmlspecialchars($resultado['codigo_postal']) ?></p>
+              <p><strong>Código Postal Argentino:</strong> <?= htmlspecialchars($resultado['codigo_postal_argentino']) ?></p>
+              <p><strong>Distrito Escolar:</strong> <?= htmlspecialchars($resultado['distrito_escolar']) ?></p>
+              <p><strong>Región Sanitaria:</strong> <?= htmlspecialchars($resultado['region_sanitaria']) ?></p>
+              <p><strong>Área Hospitalaria:</strong> <?= htmlspecialchars($resultado['area_hospitalaria']) ?></p>
+              <p><strong>Comisaría:</strong> <?= htmlspecialchars($resultado['comisaria']) ?></p>
+              <p><strong>Comisaría Vecinal:</strong> <?= htmlspecialchars($resultado['comisaria_vecinal']) ?></p>
+              <p><strong>Distrito Escolar:</strong> <?= htmlspecialchars($resultado['distrito_escolar']) ?></p>
               <p><strong>Coordenada XGK:</strong> <?= htmlspecialchars($resultado['x_gkba']) ?></p>
               <p><strong>Coordenada YGK:</strong> <?= htmlspecialchars($resultado['y_gkba']) ?></p>
+              <p><strong>Coordenada XWGS84:</strong> <?= htmlspecialchars($resultado['x_wgs84']) ?></p>
+              <p><strong>Coordenada YWGS84:</strong> <?= htmlspecialchars($resultado['y_wgs84']) ?></p>
             </div>
           </div>
         </div>
-        <!-- Geolocalización -->
-        <div class="tab-pane fade" id="geolocalizacion" role="tabpanel">
+        <!-- Operativos -->
+        <div class="tab-pane fade" id="operativos" role="tabpanel">
           <div class="card shadow-sm mb-3">
             <div class="card-body">
               <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Dirección principal - Calle:</strong> <?= htmlspecialchars($resultado['calle']) ?></li>
-                <li class="list-group-item"><strong>Dirección principal - Altura:</strong> <?= htmlspecialchars($resultado['altura']) ?></li>
-                <li class="list-group-item"><strong>Comuna:</strong> <?= htmlspecialchars($resultado['comuna']) ?></li>
-                <li class="list-group-item"><strong>Barrio:</strong> <?= htmlspecialchars($resultado['barrio']) ?></li>
-                <li class="list-group-item"><strong>Comisaría:</strong> <?= htmlspecialchars($resultado['comisaria']) ?></li>
-                <li class="list-group-item"><strong>Comisaría Vecinal:</strong> <?= htmlspecialchars($resultado['comisaria_vecinal']) ?></li>
-                <li class="list-group-item"><strong>Área Hospitalaria:</strong> <?= htmlspecialchars($resultado['area_hospitalaria']) ?></li>
-                <li class="list-group-item"><strong>Región Sanitaria:</strong> <?= htmlspecialchars($resultado['region_sanitaria']) ?></li>
-                <li class="list-group-item"><strong>Código Postal:</strong> <?= htmlspecialchars($resultado['codigo_postal']) ?></li>
-                <li class="list-group-item"><strong>CPA:</strong> <?= htmlspecialchars($resultado['codigo_postal_argentino']) ?></li>
+                <li class="list-group-item"><strong>RENIE:</strong> <?= htmlspecialchars($resultado['operativo_1']) ?></li>
+                <li class="list-group-item"><strong>CENIE:</strong> <?= htmlspecialchars($resultado['operativo_2']) ?></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- Parcela -->
+        <div class="tab-pane fade" id="parcela" role="tabpanel">
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Sección - Manzana - Parcela:</strong> <?= htmlspecialchars($resultado['smp']) ?></li>
+                <li class="list-group-item"><strong>Superficie Total:</strong> <?= htmlspecialchars($resultado['superficie_total']) ?></li>
+                <li class="list-group-item"><strong>Superficie Cubierta:</strong> <?= htmlspecialchars($resultado['superficie_cubierta']) ?></li>
+                <li class="list-group-item"><strong>Frente:</strong> <?= htmlspecialchars($resultado['frente']) ?></li>
+                <li class="list-group-item"><strong>Fondo:</strong> <?= htmlspecialchars($resultado['fondo']) ?></li>
+                <li class="list-group-item"><strong>Propiedad Horizontal:</strong> <?= htmlspecialchars($resultado['propiedad_horizontal']) ?></li>
+                <li class="list-group-item"><strong>Pisos Bajo Rasante:</strong> <?= htmlspecialchars($resultado['pisos_bajo_rasante']) ?></li>
+                <li class="list-group-item"><strong>Pisos Sobre Rasante:</strong> <?= htmlspecialchars($resultado['pisos_sobre_rasante']) ?></li>
               </ul>
             </div>
           </div>
@@ -216,7 +243,6 @@
             join cuis.direcciones aso on dir.direccion_id = aso.id<br>
             where edi.cui = '200215'. <br>Pero la tabla puede estar mal poblada.<br>
           </li>
-          <li>Traer datos de parcela.</li>
         </ul>
       </div><!-- termina pendientes -->
     </main>
