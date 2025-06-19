@@ -52,17 +52,27 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 4: Alta de CUI -->
+        <!-- Tarjeta 4: Alta de CUI por dirección -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
-              <h5 class="card-title">Alta de CUI</h5>
-              <p class="card-text">Dar el Alta de un nuevo edificio educativo.</p>
-              <a href="alta.php" class="btn btn-primary mt-auto w-100">Ir a dar de alta un CUI</a>
+              <h5 class="card-title">Alta de CUI por Dirección</h5>
+              <p class="card-text">Dar el Alta de un nuevo edificio educativo a partir de la dirección encontrada en la API de CABA.</p>
+              <a href="altaxdireccion.php" class="btn btn-primary mt-auto w-100">Ir a dar de alta un CUI por dirección</a>
             </div>
           </div>
         </div>
-        <!-- Tarjeta 5: Gestión de Tablas -->
+        <!-- Tarjeta 5: Alta de CUI por mapa -->
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">Alta de CUI por Mapa</h5>
+              <p class="card-text">Dar el Alta de un nuevo edificio educativo ingresando la ubicación en un mapa (cuando no se encuentra la dirección exacta en la API de CABA).</p>
+              <a href="altaxmapa.php" class="btn btn-primary mt-auto w-100">Ir a dar de alta un CUI por mapa</a>
+            </div>
+          </div>
+        </div>
+        <!-- Tarjeta 6: Gestión de Tablas -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -72,7 +82,7 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 6: Descargas -->
+        <!-- Tarjeta 7: Descargas -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -82,7 +92,7 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 7: Usuarios -->
+        <!-- Tarjeta 8: Usuarios -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -92,7 +102,7 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 8: Mapa -->
+        <!-- Tarjeta 9: Mapa -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -103,6 +113,19 @@
           </div>
         </div>
       </div>
+
+  <!-- Pendientes -->
+      <div class="mt-3 p-3 border border-warning rounded bg-light">
+        <h6 class="text-warning">Pendientes:</h6>
+        <ul class="mb-0">
+          <li>Poblar la tabla puertas.</li>
+          <li>Poblar correctamente la tabla direcciones.</li>
+          <li>Vamos a dejar para el final la conexión con la base RENIE en espera del DER de Desarrollo.</li>
+        </ul>
+      </div><!-- termina pendientes -->
+
+
+
     </main>
     <!-- Traigo footer -->
     <?php include('../includes/footer.php'); ?>

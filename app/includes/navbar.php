@@ -25,8 +25,12 @@
         <li class="nav-item">
           <a class="nav-link" href="../views/editar.php">Editar CUI</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="../views/alta.php">Alta de CUI</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">Alta de CUI</a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+            <li><a class="dropdown-item" href="../views/altaxdireccion.php">Por dirección</a></li>
+            <li><a class="dropdown-item" href="../views/altaxmapa.php">Por Mapa</a></li>
+          </ul>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="../views/actualizaciones.php">Gestión de Tablas</a>

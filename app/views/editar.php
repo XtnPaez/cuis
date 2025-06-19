@@ -234,7 +234,7 @@
       <div class="mt-3 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
-          <li>Faltan campos para la versión productiva. Consultar con el equipo.</li>
+          <li>Faltan campos para la versión productiva.</li>
         </ul>
       </div><br>
     </main>

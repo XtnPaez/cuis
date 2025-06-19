@@ -17,7 +17,7 @@ if ($calle === '' || $altura === '' || !is_numeric($altura)) {
 }
 
 try {
-    // 1. Buscar coincidencia exacta
+    // 1. Buscar coincidencia exacta en la base
     $stmt = $pdo->prepare("
         SELECT calle, altura, x_wgs84, y_wgs84, cui
         FROM cuis.v_direcciones_coordenadas
@@ -49,66 +49,88 @@ try {
         exit;
     }
 
-    // 2. Buscar punto base con altura cercana (±10)
-    $alturaMin = max(0, $altura - 10);
-    $alturaMax = $altura + 10;
+    // 2. Buscar coordenadas en la API USIG
+    $base = 'https://ws.usig.buenosaires.gob.ar';
+    $normalizarUrl = "$base/rest/normalizar_direcciones?calle=" . urlencode($calle) . "&altura=$altura&desambiguar=1";
 
-    $stmt = $pdo->prepare("
-        SELECT x_wgs84, y_wgs84
-        FROM cuis.v_direcciones_coordenadas
-        WHERE calle ILIKE :calle AND altura BETWEEN :alturaMin AND :alturaMax
-        ORDER BY ABS(CAST(altura AS INTEGER) - :altura)
-        LIMIT 1
-    ");
-    $stmt->execute([
-        ':calle' => $calle,
-        ':alturaMin' => $alturaMin,
-        ':alturaMax' => $alturaMax,
-        ':altura' => $altura
-    ]);
-    $puntoBase = $stmt->fetch(PDO::FETCH_ASSOC);
+    $json1 = @file_get_contents($normalizarUrl);
+    $data1 = json_decode($json1, true);
 
-    if (!$puntoBase) {
+    if (!isset($data1['DireccionesCalleAltura']['direcciones'][0]['CodigoCalle'])) {
         echo json_encode([
             'status' => 'sin_resultados',
-            'mensaje' => '❌ No se encontró ninguna dirección aproximada en la calle con altura cercana.',
+            'mensaje' => '❌ Dirección no encontrada en la API oficial.',
             'resultados' => []
         ]);
         exit;
     }
 
-    // 3. Buscar direcciones dentro de 100 metros del punto base
+    $codCalle = $data1['DireccionesCalleAltura']['direcciones'][0]['CodigoCalle'];
+    $urlXY = "$base/geocoder/2.2/geocoding?cod_calle=$codCalle&altura=$altura&metodo=puertas";
+
+    $jsonp = @file_get_contents($urlXY);
+    $json2 = json_decode(trim($jsonp, '();'), true); // Elimina paréntesis del JSONP
+
+    if (!isset($json2['x'], $json2['y'])) {
+        echo json_encode([
+            'status' => 'sin_resultados',
+            'mensaje' => '❌ La API no devolvió coordenadas válidas.',
+            'resultados' => []
+        ]);
+        exit;
+    }
+
+    $x = $json2['x'];
+    $y = $json2['y'];
+
+    $urlConvertir = "$base/rest/convertir_coordenadas?x=$x&y=$y&output=lonlat";
+    $json3 = @file_get_contents($urlConvertir);
+    $data3 = json_decode($json3, true);
+
+    if (!isset($data3['resultado']['x'], $data3['resultado']['y'])) {
+        echo json_encode([
+            'status' => 'sin_resultados',
+            'mensaje' => '❌ No se pudo convertir a WGS84.',
+            'resultados' => []
+        ]);
+        exit;
+    }
+
+    $lon = floatval($data3['resultado']['x']);
+    $lat = floatval($data3['resultado']['y']);
+
+    // 3. Buscar direcciones dentro de 100 metros del punto WGS84
     $stmt = $pdo->prepare("
         SELECT calle, altura, x_wgs84, y_wgs84, cui
         FROM cuis.v_direcciones_coordenadas
         WHERE ST_DWithin(
             ST_SetSRID(ST_MakePoint(x_wgs84, y_wgs84), 4326)::geography,
-            ST_SetSRID(ST_MakePoint(:x, :y), 4326)::geography,
+            ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography,
             100
         )
         ORDER BY ST_Distance(
             ST_SetSRID(ST_MakePoint(x_wgs84, y_wgs84), 4326)::geography,
-            ST_SetSRID(ST_MakePoint(:x, :y), 4326)::geography
+            ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography
         )
     ");
     $stmt->execute([
-        ':x' => $puntoBase['x_wgs84'],
-        ':y' => $puntoBase['y_wgs84']
+        ':lon' => $lon,
+        ':lat' => $lat
     ]);
     $cercanos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     if (!empty($cercanos)) {
         echo json_encode([
             'status' => 'aproximado',
-            'mensaje' => "⚠️ No se encontró la dirección exacta, pero se muestran direcciones dentro de 100 metros de {$calle} {$altura}.",
+            'mensaje' => "⚠️ Dirección no encontrada exactamente. Mostrando coincidencias a 100 metros de {$calle} {$altura}.",
             'resultados' => $cercanos,
-            'punto_base' => $puntoBase
+            'punto_base' => ['x_wgs84' => $lon, 'y_wgs84' => $lat]
         ]);
         exit;
     } else {
         echo json_encode([
             'status' => 'sin_resultados',
-            'mensaje' => '❌ No hay resultados a 100 metros de la dirección que ingresó.',
+            'mensaje' => '❌ No hay resultados a 100 metros de la dirección consultada.',
             'resultados' => []
         ]);
         exit;
@@ -118,7 +140,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'status' => 'error',
-        'mensaje' => 'Error en el servidor: ' . $e->getMessage(),
+        'mensaje' => 'Error del servidor: ' . $e->getMessage(),
         'resultados' => []
     ]);
     exit;

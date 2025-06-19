@@ -55,7 +55,7 @@ require_once '../includes/funciones_busqueda.php';
       <div class="mt-3 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
-          <li>Revisar lo de los 100 metros.</li>
+          <li>Traer las pestañas según buscar por código.</li>
         </ul>
       </div><!-- termina pendientes -->
 

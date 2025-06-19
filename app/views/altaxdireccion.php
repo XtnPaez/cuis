@@ -40,8 +40,7 @@
       <div class="mt-3 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
-          <li>Crear el 'Mover' el punto al centro del poligono, porque este resultado pone las coordenadas en la puerta. Y guardar las coordenadas del punto movido.</li>
-          <li>Crear la query de insert.</li>
+          <li>Crear 'Mover' el punto al centro del poligono, porque este resultado pone las coordenadas en la puerta. Y guardar las coordenadas del punto movido.</li>
         </ul>
       </div>
     </main>

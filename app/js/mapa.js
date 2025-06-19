@@ -1,21 +1,20 @@
 // Planto el mapa
 const map = L.map('map').setView([-34.62, -58.44], 12);
-
 // Capas base
 const cabaTiles = L.tileLayer('https://servicios.usig.buenosaires.gob.ar/mapcache/tms/1.0.0/amba_con_transporte_3857@GoogleMapsCompatible/{z}/{x}/{-y}.png', {
-  attribution: '&copy; CABA Tiles || UEICEE - MAPA'
+  attribution: '&copy; Tiles CABA | UEICEE - MAPA'
 }).addTo(map);
 const osmTiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap || UEICEE - MAPA'
+  attribution: '&copy; OpenStreetMap | UEICEE - MAPA'
 });
 const cabaFoto = L.tileLayer('http://servicios.usig.buenosaires.gob.ar/mapcache/tms/1.0.0/fotografias_aereas_2017_caba_3857@GoogleMapsCompatible/{z}/{x}/{-y}.png', {
-  attribution: '&copy; CABA Fotografías Aéreas || UEICEE - MAPA'
+  attribution: '&copy; Fotografía Aérea CABA | UEICEE - MAPA'
 });
 // Leyenda combinada
 const leyenda = L.control({ position: 'bottomright' });
 let capasVisibles = new Set();
 function actualizarLeyenda() {
-  let html = `<h6 class="mb-1">Referencias</h6>`;
+  let html = `<h7 class="mb-"><b>Referencias</b></h7><br>`;
   if (capasVisibles.has("CUIs")) {
     html += `<i style="background: #007bff; border-radius: 50%; width: 10px; height: 10px; display: inline-block; margin-right: 5px;"></i> CUIs<br>`;
   }
@@ -29,16 +28,14 @@ function actualizarLeyenda() {
   leyenda._div.innerHTML = html;
   leyenda.addTo(map);
 }
-
 // Control de capas
 const baseLayers = {
   "Mapa Base OpenStreetMap": osmTiles,
   "Mapa Base CABA": cabaTiles,
-  "Fotografías Aéreas CABA": cabaFoto
+  "Fotografía Aérea CABA": cabaFoto
 };
 const overlays = {};
 const capasControl = L.control.layers(baseLayers, overlays, { position: 'topright' }).addTo(map);
-
 // Capa de Edificios
 let edificiosLayer = null;
 fetch('../api/edificios.php')
@@ -66,7 +63,6 @@ fetch('../api/edificios.php')
     actualizarLeyenda();
   })
   .catch(err => console.error('Error cargando CUIs:', err));
-
 // Capa de Direcciones
 let direccionesLayer = null;
 fetch('../api/direcciones.php')
@@ -89,11 +85,9 @@ fetch('../api/direcciones.php')
         fillOpacity: 1
       })
     });
-
     capasControl.addOverlay(direccionesLayer, "Direcciones");
   })
   .catch(err => console.error('Error cargando direcciones:', err));
-
 // Eventos para mostrar/ocultar leyenda combinada
 map.on('overlayadd', function (e) {
   capasVisibles.add(e.name);
