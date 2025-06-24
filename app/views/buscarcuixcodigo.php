@@ -109,6 +109,7 @@
               <p><strong>Nombre del Predio:</strong> <?= htmlspecialchars($resultado['predio']) ?></p>
               <p><strong>Comuna:</strong> <?= htmlspecialchars($resultado['comuna']) ?></p>
               <p><strong>Barrio:</strong> <?= htmlspecialchars($resultado['barrio']) ?></p>
+              <p><strong>Radio Censal 2022:</strong> <?= htmlspecialchars($resultado['ffrr_2022']) ?></p>
               <p><strong>Código Postal:</strong> <?= htmlspecialchars($resultado['codigo_postal']) ?></p>
               <p><strong>Código Postal Argentino:</strong> <?= htmlspecialchars($resultado['codigo_postal_argentino']) ?></p>
               <p><strong>Distrito Escolar:</strong> <?= htmlspecialchars($resultado['distrito_escolar']) ?></p>

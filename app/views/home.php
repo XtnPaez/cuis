@@ -72,12 +72,12 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 6: Gestión de Tablas -->
+        <!-- Tarjeta 6: Gestión de Tablas de Dominio -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
-              <h5 class="card-title">Gestión de Tablas</h5>
-              <p class="card-text">ABM de tablas complementarias como Predios, Operativos, Direcciones u Observaciones.</p>
+              <h5 class="card-title">Gestión de Tablas de Dominio</h5>
+              <p class="card-text">ABM de tablas de Dominio como Predios, Operativos, Direcciones u Observaciones.</p>
               <a href="actualizaciones.php" class="btn btn-primary mt-auto w-100">Ir a actualizaciones</a>
             </div>
           </div>
@@ -120,6 +120,7 @@
         <ul class="mb-0">
           <li>Poblar la tabla puertas.</li>
           <li>Poblar correctamente la tabla direcciones.</li>
+          <li>Fraccion y radio (?).</li>
           <li>Vamos a dejar para el final la conexión con la base RENIE en espera del DER de Desarrollo.</li>
           <li>Mejorar el modo de query para relevamientos.</li>
         </ul>

@@ -34,7 +34,6 @@
       <div class="mt-3 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
-          <li>Agregar capas de Distrito Escolar, Barrios, Comunas.</li>
           <li>Mejorar las consultas para que los popups muestren "direccion principal" en CUI y "CUI" en Direcciones.</li>
           <li>Pensar en un visualizador para corregir posiciones geográficas de los CUI. PARECE que a veces están en parcelas vecinas.</li>
         </ul>

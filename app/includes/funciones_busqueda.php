@@ -3,7 +3,7 @@ function buscarCUI($pdo, $cui) {
   $sql = "SELECT 
             edi.cui, UPPER(edi.estado) as estado, UPPER(edi.sector) as sector, 
               CASE WHEN edi.institucion is null THEN 'Sin Institución Asociada' ELSE edi.institucion END as institucion,
-              CASE WHEN edi.gestionado = true THEN 'Gestionado' ELSE 'No Gestionado' END as gestionado, edi.x_gkba, edi.y_gkba,
+              CASE WHEN edi.gestionado = true THEN 'Gestionado' ELSE 'No Gestionado' END as gestionado, edi.x_gkba, edi.y_gkba, edi.ffrr_2022,
               dir.codigo_calle, dir.calle, dir.altura, 
             CASE WHEN pre.cup is null THEN 'Sin Predio' ELSE pre.cup END as codpre, 
             CASE WHEN pre.nombre is null THEN 'Sin Predio' ELSE pre.nombre END as predio,

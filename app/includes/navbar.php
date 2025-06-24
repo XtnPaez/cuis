@@ -33,7 +33,7 @@
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../views/actualizaciones.php">Gestión de Tablas</a>
+          <a class="nav-link" href="../views/actualizaciones.php">Gestión de Tablas de Dominio</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="../views/descargas.php">Descargas</a>
