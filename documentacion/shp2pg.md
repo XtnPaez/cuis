@@ -50,7 +50,7 @@ chequeamos que no haya nulls en cup y dato en nombre o viceversa; correjimos
 
 ### y a a esta altura ya estamos como para completar la tabla cuis.edificios
 
-    insert into cuis.edificios	(cui, estado, sector, predio_id, x_gkba, y_gkba, gestionado, institucion, fecha_creacion)
+    insert into cuis.edificios	(cui, estado, sector, predio_id, x_gkba, y_gkba, gestionado, institucion, fecha_creacion, geom, ffrr_2022)
     select 
     	edi.cui, 
     	edi.estado AS estado, 
@@ -67,9 +67,12 @@ chequeamos que no haya nulls en cup y dato en nombre o viceversa; correjimos
     		ELSE false
     	END as gestionado,
     	TRIM(UPPER(edi.nomb_insti)) as institucion,
-    	now() as fecha_creacion
+    	now() as fecha_creacion,
+    	ST_SetSRID(ST_MakePoint(edi.point_x, edi.point_y), 9498) as geom,
+    	fr.cod_indec
     from public.edificios_temp edi 
     left join cuis.predios pre on pre.cup = edi.cup
+    left join public.cui_ffrr2022 fr on fr.cui = edi.cui::text 
     order by edi.cui asc
 
 ### vamos a completar la tabla de operativos
