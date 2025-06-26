@@ -77,6 +77,8 @@ chequeamos que no haya nulls en cup y dato en nombre o viceversa; correjimos
 
 Luego hay que correr el script que convierte gkba en wgs84. Recordar que estos puntos no son direcciones, son la ubicación del edificio.
 
+en geocaba/funciones.php function wgs84_para_cuis()
+
 ### vamos a completar la tabla de operativos
 
     insert into cuis.operativos (nombre) values ('CENIE 2010'),('CIE 2017')
