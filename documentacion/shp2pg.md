@@ -2,6 +2,8 @@
 
 Se sube via qgis el shape de edificios a sig.cuis.public con el nombre edificios_temp
 
+TIP: agregar newid para que no pinche por id duplicado
+
 ### vamos a chequear que haya cuis unicos
 
     select cui from public.edificios_temp group by cui having count(cui) >1
