@@ -50,7 +50,7 @@ chequeamos que no haya nulls en cup y dato en nombre o viceversa; correjimos
 
 ### y a a esta altura ya estamos como para completar la tabla cuis.edificios
 
-    insert into cuis.edificios	(cui, estado, sector, predio_id, x_gkba, y_gkba, gestionado, institucion, fecha_creacion, geom, ffrr_2022)
+    insert into cuis.edificios (cui, estado, sector, predio_id, x_gkba, y_gkba, gestionado, institucion, fecha_creacion, geom, ffrr_2022)
     select 
     	edi.cui, 
     	edi.estado AS estado, 
@@ -74,6 +74,8 @@ chequeamos que no haya nulls en cup y dato en nombre o viceversa; correjimos
     left join cuis.predios pre on pre.cup = edi.cup
     left join public.cui_ffrr2022 fr on fr.cui = edi.cui::text 
     order by edi.cui asc
+
+Luego hay que correr el script que convierte gkba en wgs84. Recordar que estos puntos no son direcciones, son la ubicación del edificio.
 
 ### vamos a completar la tabla de operativos
 
