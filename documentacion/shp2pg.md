@@ -50,7 +50,7 @@ chequeamos que no haya nulls en cup y dato en nombre o viceversa; correjimos
 
 ### y a a esta altura ya estamos como para completar la tabla cuis.edificios
 
-    insert into cuis.edificios	(cui, estado, sector, predio_id, x, y, gestionado, institucion, fecha_creacion)
+    insert into cuis.edificios	(cui, estado, sector, predio_id, x_gkba, y_gkba, gestionado, institucion, fecha_creacion)
     select 
     	edi.cui, 
     	edi.estado AS estado, 
