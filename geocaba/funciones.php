@@ -315,7 +315,7 @@ function crear_geom_para_cuis()
 {
     include 'config.php';
     // hago el geom con postgis
-    $q20 = 'UPDATE cuis.edificios set geom = ST_SetSRID(ST_MakePoint(x_wgs84, y_wgs84),4326) where x_wgs84 is not null and y_wgs84 is not null';
+    $q20 = 'UPDATE cuis.edificios set geom_wgs84 = ST_SetSRID(ST_MakePoint(x_wgs84, y_wgs84),4326) where x_wgs84 is not null and y_wgs84 is not null';
     $res20 = pg_query($dbconn, $q20);
 }
 
