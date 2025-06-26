@@ -25,13 +25,14 @@ TIP: agregar newid para que no pinche por id duplicado
 
 chequeamos que no haya nulls en cup y dato en nombre o viceversa; correjimos 
 
-    select * from public.edificios_temp where nomb_predi is not null and cup is null
-    update public.edificios_temp set cup = '017' where newid = 2746
+    select * from public.edificios_temp where nomb_predi is not null and cup is null;
+    update public.edificios_temp set cup = '017' where newid = 2746;
 
 ### y hacemos update de predios
 
+    truncate cuis.predios cascade;
     insert into cuis.predios(cup, nombre) 
-    select cup, trim(upper(nomb_predi)) from public.edificios_temp where cup is not null or nomb_predi is not null group by cup, nomb_predi order by cup asc
+    select cup, trim(upper(nomb_predi)) from public.edificios_temp where cup is not null or nomb_predi is not null group by cup, nomb_predi order by cup asc;
 
 ### chequeamos estado
 
