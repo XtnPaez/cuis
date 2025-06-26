@@ -75,9 +75,28 @@ chequeamos que no haya nulls en cup y dato en nombre o viceversa; correjimos
     left join public.cui_ffrr2022 fr on fr.cui = edi.cui::text 
     order by edi.cui asc
 
-Luego hay que correr el script que convierte gkba en wgs84. Recordar que estos puntos no son direcciones, son la ubicación del edificio.
+Luego hay que correr el script que convierte gkba en wgs84.
 
-en geocaba/funciones.php function wgs84_para_cuis()
+en geocaba/index.php
+
+    <?php
+        include 'funciones.php';
+        // normalizar_calle_altura();
+        // traer_datos_utiles_2();
+        // traer_datos_de_catastro();
+        // traer_coordenadas_gkba();
+        // traer_coordenadas_wgs84();
+        // crear_geom();
+        wgs84_para_cuis();
+        crear_geom_para_cuis();
+        
+    ?>
+    
+Levantar apache
+
+desde el navegador http://localhost/cuis/geocaba/index.php
+
+esperar y chequear
 
 ### vamos a completar la tabla de operativos
 
