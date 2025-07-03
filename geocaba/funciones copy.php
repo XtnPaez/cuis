@@ -9,34 +9,41 @@ function normalizar_calle_altura()
     include 'config.php';    
     $q1 = "SELECT id, calle_m, altura_m FROM public.direcciones_temp WHERE geo is true";
     $res1 = pg_query($dbconn, $q1) or die('Error: ' . pg_last_error());
-    while($row1 = pg_fetch_array($res1,NULL,PGSQL_ASSOC) )
-        {
-            $elaidi = $row1['id'];
-            // API Procesos Geográficos https://ws.usig.buenosaires.gob.ar/rest/normalizar_direcciones?calle=julio%20roca&altura=782&desambiguar=1    
-            $peticion1 = str_replace(" ","%20",'https://ws.usig.buenosaires.gob.ar/rest/normalizar_direcciones?'
-                    . 'calle=' . $row1['calle_m']
-                    . '&altura=' . $row1['altura_m']
-                    . '&desambiguar=1');
-            $json1 = file_get_contents($peticion1, true);
-            $json1_output = json_decode($json1);
-            // si el json en TipoResultado trae algo distinto a DireccionNormalizada (error) pongo estado en 1 y salgo del if
-            if($json1_output->TipoResultado != 'DireccionNormalizada')
-                {
-                    $q2 = "UPDATE public.direcciones_temp SET estado = 99 WHERE id = " . $elaidi;
-                    $res2 = pg_query($dbconn,$q2);                
-                }
-                else
-                {
-                    $cn = str_replace("'","`",$json1_output->DireccionesCalleAltura->direcciones[0]->Calle);
-                    $q3 = "UPDATE public.direcciones_temp SET
-                    codigo_calle = " . $json1_output->DireccionesCalleAltura->direcciones[0]->CodigoCalle 
-                    . ", calle = '" . $cn
-                    . "', altura = " . $json1_output->DireccionesCalleAltura->direcciones[0]->Altura 
-                    . ", estado = 1 " 
-                    . " WHERE id = " . $elaidi;
-                    $res3 = pg_query($dbconn,$q3);
-                }; // if
-        }; // while
+    while ($row1 = pg_fetch_array($res1, NULL, PGSQL_ASSOC)) {
+        $elaidi = $row1['id'];
+        $peticion1 = 'https://ws.usig.buenosaires.gob.ar/rest/normalizar_direcciones?' .
+        'calle=' . urlencode($row1['calle_m']) .
+        '&altura=' . urlencode($row1['altura_m']) .
+        '&desambiguar=1';
+        $json1 = @file_get_contents($peticion1);
+        if ($json1 === false) {
+            // Falla al conectar o error de red
+            $qError = "UPDATE public.direcciones_temp SET estado = 98 WHERE id = " . intval($elaidi);
+            pg_query($dbconn, $qError);
+            continue;
+        }
+        $json1_output = json_decode($json1);
+        if (
+            !is_object($json1_output) ||
+            !isset($json1_output->TipoResultado) ||
+            $json1_output->TipoResultado != 'DireccionNormalizada'
+        ) {
+            // JSON inválido o resultado inesperado
+            $q2 = "UPDATE public.direcciones_temp SET estado = 99 WHERE id = " . intval($elaidi);
+            pg_query($dbconn, $q2);
+            continue;
+        }
+        // Si llegó hasta acá, la dirección es válida
+        $dir = $json1_output->DireccionesCalleAltura->direcciones[0];
+        $cn = str_replace("'", "`", $dir->Calle);
+        $q3 = "UPDATE public.direcciones_temp SET
+            codigo_calle = " . intval($dir->CodigoCalle) . ",
+            calle = '" . $cn . "',
+            altura = " . intval($dir->Altura) . ",
+            estado = 1
+            WHERE id = " . intval($elaidi);
+        pg_query($dbconn, $q3);
+    }; // while
 }; // funcion
 
 /////////////////////////////////////
@@ -46,52 +53,58 @@ function normalizar_calle_altura()
 function traer_datos_utiles()
 {
     include 'config.php';
-    $q4 = "SELECT id, calle, altura FROM public.direcciones_temp where estado = 1"; // si estado es 1 es porque la api trajo datos
+    $q4 = "SELECT id, calle, altura FROM public.direcciones_temp WHERE estado = 1";
     $res4 = pg_query($dbconn, $q4);
-    while($row4 = pg_fetch_array($res4,NULL,PGSQL_ASSOC) )
-        {
-            $elaidi = $row4['id'];
-            // API Datos Utiles https://ws.usig.buenosaires.gob.ar/datos_utiles?calle=peru&altura=782
-            $peticion4 = str_replace(" ","%20",'https://ws.usig.buenosaires.gob.ar/datos_utiles?'
-                    . 'calle=' . $row4['calle'] 
-                    . '&altura=' . $row4['altura']);
-            $json4 = file_get_contents($peticion4, true);
-            $json4_output = json_decode($json4);
-            if(empty($json4_output))
-            {
-                $q6 = "UPDATE public.direcciones_temp SET estado = 99 WHERE id = " . $elaidi;
-                $res6 = pg_query($dbconn,$q6);
-            }
-            else
-            {
-                // paso los atributos a variables para que no pinchen los que vienen vacíos - Si son integer, ponerle 9999 y no null
-                if (empty($json4_output->comuna)){$comuna = null;}else{$comuna = $json4_output->comuna;};
-                if (empty($json4_output->barrio)){$barrio = null;}else{$barrio = $json4_output->barrio;};
-                if (empty($json4_output->comisaria)){$comisaria = null;}else{$comisaria = $json4_output->comisaria;};
-                if (empty($json4_output->area_hospitalaria)){$area_hospitalaria = null;}else{$area_hospitalaria = $json4_output->area_hospitalaria;};
-                if (empty($json4_output->region_sanitaria)){$region_sanitaria = null;}else{$region_sanitaria = $json4_output->region_sanitaria;};
-                if (empty($json4_output->distrito_escolar)){$distrito_escolar = null;}else{$distrito_escolar = $json4_output->distrito_escolar;};
-                if (empty($json4_output->comisaria_vecinal)){$comisaria_vecinal = null;}else{$comisaria_vecinal = $json4_output->comisaria_vecinal;};
-                if (empty($json4_output->seccion_catastral)){$seccion_catastral = null;}else{$seccion_catastral = $json4_output->seccion_catastral;};
-                if (empty($json4_output->codigo_postal)){$codigo_postal = 9999;}else{$codigo_postal = $json4_output->codigo_postal;};
-                if (empty($json4_output->codigo_postal_argentino)){$codigo_postal_argentino = null;}else{$codigo_postal_argentino = $json4_output->codigo_postal_argentino;};
-                $q5 = "UPDATE public.direcciones_temp SET
-                comuna = '" . $comuna
-                . "', barrio = '" . $barrio
-                . "', comisaria = '" . $comisaria
-                . "', area_hospitalaria = '" . $area_hospitalaria
-                . "', region_sanitaria = '" . $region_sanitaria
-                . "', distrito_escolar = '" . $distrito_escolar
-                . "', comisaria_vecinal = '" . $comisaria_vecinal
-                . "', comisaria_vecinal = '" . $seccion_catastral
-                . "', codigo_postal = '" . $codigo_postal
-                . "', codigo_postal_argentino = '" . $codigo_postal_argentino
-                . "', estado = 1 "
-                . "WHERE id = " . $elaidi;
-                $res5 = pg_query($dbconn, $q5);
-            }; // if
-        }; // while
-}; // funcion
+    while ($row4 = pg_fetch_array($res4, NULL, PGSQL_ASSOC)) {
+        $elaidi = intval($row4['id']);
+        // URL segura
+        $peticion4 = 'https://ws.usig.buenosaires.gob.ar/datos_utiles?' .
+            'calle=' . urlencode($row4['calle']) .
+            '&altura=' . urlencode($row4['altura']);
+        $json4 = @file_get_contents($peticion4);
+        // Si no responde
+        if ($json4 === false) {
+            $qError = "UPDATE public.direcciones_temp SET estado = 98 WHERE id = $elaidi";
+            pg_query($dbconn, $qError);
+            continue;
+        }
+        $json4_output = json_decode($json4);
+        // Si el JSON no se pudo decodificar
+        if (!is_object($json4_output)) {
+            $qError = "UPDATE public.direcciones_temp SET estado = 99 WHERE id = $elaidi";
+            pg_query($dbconn, $qError);
+            continue;
+        }
+        // Extraer campos, con control y sanitización
+        $comuna = isset($json4_output->comuna) ? pg_escape_string($json4_output->comuna) : null;
+        $barrio = isset($json4_output->barrio) ? pg_escape_string($json4_output->barrio) : null;
+        $comisaria = isset($json4_output->comisaria) ? pg_escape_string($json4_output->comisaria) : null;
+        $area_hospitalaria = isset($json4_output->area_hospitalaria) ? pg_escape_string($json4_output->area_hospitalaria) : null;
+        $region_sanitaria = isset($json4_output->region_sanitaria) ? pg_escape_string($json4_output->region_sanitaria) : null;
+        $distrito_escolar = isset($json4_output->distrito_escolar) ? pg_escape_string($json4_output->distrito_escolar) : null;
+        $comisaria_vecinal = isset($json4_output->comisaria_vecinal) ? pg_escape_string($json4_output->comisaria_vecinal) : null;
+        $seccion_catastral = isset($json4_output->seccion_catastral) ? pg_escape_string($json4_output->seccion_catastral) : null;
+        $codigo_postal = isset($json4_output->codigo_postal) ? intval($json4_output->codigo_postal) : 9999;
+        $codigo_postal_argentino = isset($json4_output->codigo_postal_argentino) ? pg_escape_string($json4_output->codigo_postal_argentino) : null;
+        $q5 = "
+            UPDATE public.direcciones_temp SET
+                comuna = " . ($comuna === null ? "NULL" : "'$comuna'") . ",
+                barrio = " . ($barrio === null ? "NULL" : "'$barrio'") . ",
+                comisaria = " . ($comisaria === null ? "NULL" : "'$comisaria'") . ",
+                area_hospitalaria = " . ($area_hospitalaria === null ? "NULL" : "'$area_hospitalaria'") . ",
+                region_sanitaria = " . ($region_sanitaria === null ? "NULL" : "'$region_sanitaria'") . ",
+                distrito_escolar = " . ($distrito_escolar === null ? "NULL" : "'$distrito_escolar'") . ",
+                comisaria_vecinal = " . ($comisaria_vecinal === null ? "NULL" : "'$comisaria_vecinal'") . ",
+                seccion_catastral = " . ($seccion_catastral === null ? "NULL" : "'$seccion_catastral'") . ",
+                codigo_postal = $codigo_postal,
+                codigo_postal_argentino = " . ($codigo_postal_argentino === null ? "NULL" : "'$codigo_postal_argentino'") . ",
+                estado = 1
+            WHERE id = $elaidi
+        ";
+        pg_query($dbconn, $q5);
+    }
+}
+
 
 //////////////////////////////////////////
 // Función para traer datos de catastro //
@@ -99,55 +112,72 @@ function traer_datos_utiles()
 
 function traer_datos_de_catastro()
 {
-    include 'conn.php';
+    include 'config.php';
+
     $q7 = "SELECT id, codigo_calle, altura FROM public.direcciones_temp WHERE estado = 1";
     $res7 = pg_query($dbconn, $q7);
-    while($row7 = pg_fetch_array($res7,NULL,PGSQL_ASSOC) )
-        {
-            $elaidi = $row7['id'];
-            // API catastro https://datosabiertos-catastro-apis.buenosaires.gob.ar/catastro/parcela/?codigo_calle=17071&altura=782
-            $peticion7 = 'https://datosabiertos-catastro-apis.buenosaires.gob.ar/catastro/parcela/?'
-                    . 'codigo_calle=' . $row7['codigo_calle']
-                    . '&altura=' . $row7['altura']
-                    . '&aprox';
-            $json7 = file_get_contents($peticion7, False);
-            $json7_output = json_decode($json7);
-            if(empty($json7_output))
-                {
-                    $q9 = "UPDATE public.direcciones_temp SET estado = 99 WHERE id = " . $elaidi;
-                    $res9 = pg_query($dbconn,$q9);
-                }
-                else
-                {
-                // paso los atributos a variables para que no pinchen los que vienen vacíos
-                if (empty($json7_output->smp)){$smp = null;}else{$smp = $json7_output->smp;};
-                if (empty($json7_output->seccion)){$seccion = null;}else{$seccion = $json7_output->seccion;};
-                if (empty($json7_output->manzana)){$manzana = null;}else{$manzana = $json7_output->manzana;};
-                if (empty($json7_output->parcela)){$parcela = null;}else{$parcela = $json7_output->parcela;};
-                if (empty($json7_output->superficie_total)){$superficie_total = 'null';}else{$superficie_total = $json7_output->superficie_total;};
-                if (empty($json7_output->superficie_cubierta)){$superficie_cubierta = 'null';}else{$superficie_cubierta = $json7_output->superficie_cubierta;};
-                if (empty($json7_output->frente)){$frente = 'null';}else{$frente = $json7_output->frente;};
-                if (empty($json7_output->fondo)){$fondo = 'null';}else{$fondo = $json7_output->fondo;};
-                if (empty($json7_output->propiedad_horizontal)){$propiedad_horizontal = 'null';}else{$propiedad_horizontal = $json7_output->propiedad_horizontal;};
-                if (empty($json7_output->pisos_bajo_rasante)){$pisos_bajo_rasante = 'null';}else{$pisos_bajo_rasante = $json7_output->pisos_bajo_rasante;};
-                if (empty($json7_output->pisos_sobre_rasante)){$pisos_sobre_rasante = 'null';}else{$pisos_sobre_rasante = $json7_output->pisos_sobre_rasante;};
-                    $q8 = "UPDATE sig.mapa.diruni SET 
-                    smp = '" . $smp
-                    . "', seccion_catastral = '" . $seccion
-                    . "', manzana = '" . $manzana
-                    . "', parcela = '" . $parcela
-                    . "', superficie_total = " . $superficie_total
-                    . ", superficie_cubierta = " . $superficie_cubierta
-                    . ", frente = " . $frente
-                    . ", fondo = " . $fondo
-                    . ", propiedad_horizontal = '" . $propiedad_horizontal
-                    . "', pisos_bajo_rasante = " . $pisos_bajo_rasante
-                    . ", pisos_sobre_rasante = " . $pisos_sobre_rasante
-                    . ", estado = 1 WHERE id = " . $elaidi;
-                    $res8 = pg_query($dbconn, $q8);        
-                }; // if
-        }; // while
-}; //funcion
+
+    while ($row7 = pg_fetch_array($res7, NULL, PGSQL_ASSOC)) {
+        $elaidi = intval($row7['id']);
+        $codigo_calle = urlencode($row7['codigo_calle']);
+        $altura = urlencode($row7['altura']);
+
+        // Armo URL de la API
+        $peticion7 = "https://datosabiertos-catastro-apis.buenosaires.gob.ar/catastro/parcela/?codigo_calle={$codigo_calle}&altura={$altura}&aprox";
+
+        $json7 = @file_get_contents($peticion7);
+
+        if ($json7 === false) {
+            // error de conexión
+            $qError = "UPDATE public.direcciones_temp SET estado = 98 WHERE id = $elaidi";
+            pg_query($dbconn, $qError);
+            continue;
+        }
+
+        $json7_output = json_decode($json7);
+
+        if (!is_object($json7_output)) {
+            // JSON inválido
+            $qError = "UPDATE public.direcciones_temp SET estado = 99 WHERE id = $elaidi";
+            pg_query($dbconn, $qError);
+            continue;
+        }
+
+        // Extraer y limpiar valores
+        $smp = isset($json7_output->smp) ? pg_escape_string($json7_output->smp) : null;
+        $seccion = isset($json7_output->seccion) ? pg_escape_string($json7_output->seccion) : null;
+        $manzana = isset($json7_output->manzana) ? pg_escape_string($json7_output->manzana) : null;
+        $parcela = isset($json7_output->parcela) ? pg_escape_string($json7_output->parcela) : null;
+
+        $superficie_total = isset($json7_output->superficie_total) ? floatval($json7_output->superficie_total) : 'NULL';
+        $superficie_cubierta = isset($json7_output->superficie_cubierta) ? floatval($json7_output->superficie_cubierta) : 'NULL';
+        $frente = isset($json7_output->frente) ? floatval($json7_output->frente) : 'NULL';
+        $fondo = isset($json7_output->fondo) ? floatval($json7_output->fondo) : 'NULL';
+
+        $propiedad_horizontal = isset($json7_output->propiedad_horizontal) ? pg_escape_string($json7_output->propiedad_horizontal) : null;
+        $pisos_bajo_rasante = isset($json7_output->pisos_bajo_rasante) ? intval($json7_output->pisos_bajo_rasante) : 'NULL';
+        $pisos_sobre_rasante = isset($json7_output->pisos_sobre_rasante) ? intval($json7_output->pisos_sobre_rasante) : 'NULL';
+
+        $q8 = "
+            UPDATE public.direcciones_temp SET
+                smp = " . ($smp === null ? "NULL" : "'" . $smp . "'") . ",
+                seccion_catastral = " . ($seccion === null ? "NULL" : "'" . $seccion . "'") . ",
+                manzana = " . ($manzana === null ? "NULL" : "'" . $manzana . "'") . ",
+                parcela = " . ($parcela === null ? "NULL" : "'" . $parcela . "'") . ",
+                superficie_total = $superficie_total,
+                superficie_cubierta = $superficie_cubierta,
+                frente = $frente,
+                fondo = $fondo,
+                propiedad_horizontal = " . ($propiedad_horizontal === null ? "NULL" : "'" . $propiedad_horizontal . "'") . ",
+                pisos_bajo_rasante = $pisos_bajo_rasante,
+                pisos_sobre_rasante = $pisos_sobre_rasante,
+                estado = 1
+            WHERE id = $elaidi
+        ";
+
+        pg_query($dbconn, $q8);
+    }
+}
 
 //////////////////////////////////////////////////
 // Función para traer pares de coordenadas GKBA //
