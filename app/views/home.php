@@ -9,7 +9,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UEICEE : MAPA : CUIS : Home</title>
+    <title>CUIS : Inicio</title>
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/sticky.css" rel="stylesheet">
     <link rel="apple-touch-icon" href="../images/apple-icon-180x180.png" sizes="180x180">
@@ -113,21 +113,15 @@
           </div>
         </div>
       </div>
-
-  <!-- Pendientes -->
+      <!-- Pendientes -->
       <div class="mt-3 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
           <li>Poblar la tabla puertas.</li>
-          <li>Poblar correctamente la tabla direcciones.</li>
-          <li>Fraccion y radio (?).</li>
           <li>Vamos a dejar para el final la conexión con la base RENIE en espera del DER de Desarrollo.</li>
           <li>Mejorar el modo de query para relevamientos.</li>
         </ul>
       </div><!-- termina pendientes -->
-
-
-
     </main>
     <!-- Traigo footer -->
     <?php include('../includes/footer.php'); ?>

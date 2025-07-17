@@ -43,7 +43,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UEICEE : MAPA : CUIS : Buscar</title>
+    <title>CUIS : Buscar</title>
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/sticky.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -237,15 +237,10 @@
       <div class="mt-3 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
-          <li><b>REVISAR.</b><br>Agregar las direcciones asociadas al CUI. <br>La query parece ser esta : <br>
-            select aso.calle, aso.altura<br>
-            from cuis.edificios edi<br>
-            join cuis.edificios_direcciones dir on edi.id = dir.edificio_id<br>
-            join cuis.direcciones aso on dir.direccion_id = aso.id<br>
-            where edi.cui = '200215'. <br>Pero la tabla puede estar mal poblada.<br>
-          </li>
+          <li>Agregar las direcciones asociadas al CUI</li>
         </ul>
-      </div><!-- termina pendientes -->
+      </div>
+      <!-- termina pendientes -->
     </main>
     <!-- traigo footer -->
     <?php include('../includes/footer.php'); ?>
