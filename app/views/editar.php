@@ -81,6 +81,7 @@
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar']) && $_POST['confirmar'] === 'si') {
     try {
       $gestionado = (isset($_POST['gestionado']) && $_POST['gestionado'] === '1') ? 1 : 0;
+      $predio_id = empty($_POST['predio_id']) ? null : $_POST['predio_id'];
       $sql = "UPDATE cuis.edificios SET
               estado = :estado,
               sector = :sector,
@@ -96,7 +97,7 @@
       $stmt->execute([
         ':estado' => $_POST['estado'],
         ':sector' => $_POST['sector'],
-        ':predio_id' => $_POST['predio_id'],
+        ':predio_id' => $predio_id,
         ':institucion' => $_POST['institucion'],
         ':gestionado' => $gestionado,
         ':x_gkba' => $_POST['x_gkba'],
@@ -155,7 +156,7 @@
       <?php endif; ?>
       <form method="POST" class="mb-4">
         <div class="input-group">
-          <input type="text" name="cui" class="form-control" placeholder="Ingresá el CUI" required>
+          <input type="text" name="cui" class="form-control" placeholder="Ingresá el CUI" required value="<?= isset($edificio['cui']) ? htmlspecialchars($edificio['cui']) : '' ?>">
           <button class="btn btn-primary" type="submit">Buscar</button>
         </div>
       </form>
@@ -188,6 +189,7 @@
         <div class="mb-3">
           <label class="form-label">Predio</label>
           <select name="predio_id" class="form-select">
+            <option value="" <?= is_null($edificio['predio_id']) ? 'selected' : '' ?>>(Sin predio)</option>
             <?php foreach ($predios as $predio): ?>
               <option value="<?= $predio['id'] ?>" <?= ($edificio['predio_id'] == $predio['id']) ? 'selected' : '' ?>>
                 <?= htmlspecialchars($predio['nombre']) ?>
@@ -230,13 +232,6 @@
         </form>
       </div>
       <?php endif; ?>
-      <!-- Div para comentarios y observaciones -->
-      <div class="mt-3 p-3 border border-warning rounded bg-light">
-        <h6 class="text-warning">Pendientes:</h6>
-        <ul class="mb-0">
-          <li>Faltan campos para la versión productiva.</li>
-        </ul>
-      </div><br>
     </main>
     <?php include('../includes/footer.php'); ?>
     <script src="../js/bootstrap.bundle.min.js"></script>
