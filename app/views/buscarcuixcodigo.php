@@ -5,8 +5,11 @@
   require_once('../config/config.php');
   // traigo las funciones de búsqueda
   require_once('../includes/funciones_busqueda.php'); 
-  // inicializo las variables
+  // Inicializo las variables
   $resultado = null;
+  $cueanexos = [];
+  $direcciones = [];
+  $renie = [];
   $error = null;
   // Procesamiento del POST
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cui'])) {
@@ -14,8 +17,9 @@
     $resultado = buscarCUI($pdo, $cui);
     if ($resultado) {
       $_SESSION['busqueda_cui'] = $resultado;
-      $cueanexos = buscarCueAnexos($pdo, $cui);
-      $_SESSION['cueanexos'] = $cueanexos;
+      $_SESSION['cueanexos'] = buscarCueAnexos($pdo, $cui);
+      $_SESSION['direcciones'] = buscarDireccionesPorCUI($pdo, $cui);
+      $_SESSION['renie'] = buscarReniePorCUI($pdo, $cui);
     } else {
       $_SESSION['error_cui'] = "No se encontró ningún edificio con el CUI ingresado.";
     }
@@ -26,12 +30,18 @@
   if (isset($_SESSION['busqueda_cui'])) {
     $resultado = $_SESSION['busqueda_cui'];
     unset($_SESSION['busqueda_cui']);
-    if (isset($_SESSION['cueanexos'])) {
+  }
+  if (isset($_SESSION['cueanexos'])) {
     $cueanexos = $_SESSION['cueanexos'];
     unset($_SESSION['cueanexos']);
-    } else {
-        $cueanexos = [];
-    }
+  }
+  if (isset($_SESSION['direcciones'])) {
+    $direcciones = $_SESSION['direcciones'];
+    unset($_SESSION['direcciones']);
+  }
+  if (isset($_SESSION['renie'])) {
+    $renie = $_SESSION['renie'];
+    unset($_SESSION['renie']);
   }
   if (isset($_SESSION['error_cui'])) {
     $error = $_SESSION['error_cui'];
@@ -130,6 +140,7 @@
           <div class="card shadow-sm mb-3">
             <div class="card-body">
               <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>CUI:</strong> <?= htmlspecialchars($resultado['cui']) ?></p></li>
                 <li class="list-group-item"><strong>RENIE:</strong> <?= htmlspecialchars($resultado['operativo_1']) ?></li>
                 <li class="list-group-item"><strong>CENIE:</strong> <?= htmlspecialchars($resultado['operativo_2']) ?></li>
               </ul>
@@ -141,6 +152,7 @@
           <div class="card shadow-sm mb-3">
             <div class="card-body">
               <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>CUI:</strong> <?= htmlspecialchars($resultado['cui']) ?></p></li>
                 <li class="list-group-item"><strong>Sección - Manzana - Parcela:</strong> <?= htmlspecialchars($resultado['smp']) ?></li>
                 <li class="list-group-item"><strong>Superficie Total:</strong> <?= htmlspecialchars($resultado['superficie_total']) ?></li>
                 <li class="list-group-item"><strong>Superficie Cubierta:</strong> <?= htmlspecialchars($resultado['superficie_cubierta']) ?></li>
@@ -149,6 +161,7 @@
                 <li class="list-group-item"><strong>Propiedad Horizontal:</strong> <?= htmlspecialchars($resultado['propiedad_horizontal']) ?></li>
                 <li class="list-group-item"><strong>Pisos Bajo Rasante:</strong> <?= htmlspecialchars($resultado['pisos_bajo_rasante']) ?></li>
                 <li class="list-group-item"><strong>Pisos Sobre Rasante:</strong> <?= htmlspecialchars($resultado['pisos_sobre_rasante']) ?></li>
+                <br><p>Datos extraídos de la API de CABA</p>
               </ul>
             </div>
           </div>
@@ -162,6 +175,7 @@
                 <table class="table table-sm table-striped">
                   <thead class="table-dark">
                     <tr>
+                      <th>CUI</th>
                       <th>CUE</th>
                       <th>Anexo</th>
                       <th>Nombre</th>
@@ -174,6 +188,7 @@
                   <tbody>
                     <?php foreach ($cueanexos as $fila): ?>
                     <tr>
+                      <td><?= htmlspecialchars($resultado['cui']) ?></td>
                       <td><?= htmlspecialchars($fila['cue']) ?></td>
                       <td><?= htmlspecialchars($fila['anexo']) ?></td>
                       <td><?= htmlspecialchars($fila['nombre']) ?></td>
@@ -196,19 +211,55 @@
         <div class="tab-pane fade" id="dires" role="tabpanel">
           <div class="card shadow-sm mb-3">
             <div class="card-body">
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Calle:</strong> <?= htmlspecialchars($resultado['calle']) ?></li>
-              </ul>
+              <?php if (!empty($direcciones)): ?>
+              <div class="table-responsive">
+                <table class="table table-sm table-striped">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>CUI</th>
+                      <th>Calle</th>
+                      <th>Altura</th>
+                      <th>Código Postal</th>
+                      <th>Parcela</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($direcciones as $fila): ?>
+                    <tr>
+                      <td><?= htmlspecialchars($resultado['cui']) ?></td>
+                      <td><?= htmlspecialchars($fila['calle']) ?></td>
+                      <td><?= htmlspecialchars($fila['altura']) ?></td>
+                      <td><?= htmlspecialchars($fila['codigo_postal']) ?></td>
+                      <td><?= htmlspecialchars($fila['smp']) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
             </div>
+            <?php else: ?>
+                <p class="text-muted">No se encontraron DIRECCIONES asociadas a este CUI.</p>
+            <?php endif; ?>
           </div>
         </div>
         <!-- Datos de RENIE -->
         <div class="tab-pane fade" id="renie" role="tabpanel">
           <div class="card shadow-sm mb-3">
             <div class="card-body">
+              <?php if (is_array($renie)): ?>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Calle:</strong> <?= htmlspecialchars($resultado['calle']) ?></li>
+                <li class="list-group-item"><strong>CUI:</strong> <?= htmlspecialchars($resultado['cui']) ?></li>
+                <li class="list-group-item"><strong>Construcciones:</strong> <?= htmlspecialchars($renie['construcciones_validas']) ?></li>
+                <li class="list-group-item"><strong>Áreas exteriores:</strong> <?= htmlspecialchars($renie['areas_exteriores_validas']) ?></li>
+                <li class="list-group-item"><strong>Locales:</strong> <?= htmlspecialchars($renie['cantidad_locales']) ?></li>
+                <li class="list-group-item"><strong>Escaleras:</strong> <?= htmlspecialchars($renie['cantidad_escaleras']) ?></li>
+                <li class="list-group-item"><strong>Tableros:</strong> <?= htmlspecialchars($renie['cantidad_tableros']) ?></li>
               </ul>
+              <br>
+              <p class="text-muted">Datos de la base RENIE gestionada por UEICEE. Todos los valores expresan la cantidad de valores válidos (no borrados).</p>
+              <?php else: ?>
+                <p class="text-muted">No se encontraron datos de RENIE asociados a este CUI.</p>
+              <?php endif; ?>
             </div>
           </div>
         </div>
@@ -233,14 +284,6 @@
         </div>
       </div> <!-- termina contenido de las pestañas -->
       <?php endif; ?>
-      <!-- Pendientes -->
-      <div class="mt-3 p-3 border border-warning rounded bg-light">
-        <h6 class="text-warning">Pendientes:</h6>
-        <ul class="mb-0">
-          <li>Agregar las direcciones asociadas al CUI</li>
-        </ul>
-      </div>
-      <!-- termina pendientes -->
     </main>
     <!-- traigo footer -->
     <?php include('../includes/footer.php'); ?>

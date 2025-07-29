@@ -28,6 +28,21 @@ function buscarCUI($pdo, $cui) {
   return $stmt->fetch();
 }
 
+function buscarDireccionesPorCUI($pdo, $cui) {
+  $sql2 = "SELECT 
+            d.calle, d.altura, udi.codigo_postal, par.smp
+            from cuis.edificios edi
+            join cuis.edificios_direcciones edd on edi.id = edd.edificio_id
+            join cuis.direcciones d on edd.direccion_id = d.id
+            join cuis.ubicacion_administrativa udi on d.ubicacion_administrativa_id = udi.id
+            join cuis.parcelas par on d.parcela_id = par.id
+            WHERE edi.cui = :cui";
+  $stmt2 = $pdo->prepare($sql2);
+  $stmt2->bindParam(':cui', $cui, PDO::PARAM_INT);
+  $stmt2->execute();
+  return $stmt2->fetchAll();
+}
+
 function buscarCueAnexos($pdo, $cui) {
   $sql = "SELECT 
             dom.cui,
@@ -51,4 +66,43 @@ function buscarCueAnexos($pdo, $cui) {
   $stmt->execute();
   return $stmt->fetchAll();
 }
+
+function buscarReniePorCUI($pdo, $cui) {
+  $sql3 = "SELECT 
+            e.cui,
+            -- Conteo de construcciones activas
+            (SELECT COUNT(*) 
+            FROM mapa_fdw.construcciones_madre c 
+            WHERE c.cui = e.cui AND c.borrado = 0) AS construcciones_validas,
+            -- Conteo de áreas exteriores activas
+            (SELECT COUNT(*) 
+            FROM mapa_fdw.areas_exteriores_madre a 
+            WHERE a.cui = e.cui AND a.borrado = 0) AS areas_exteriores_validas,
+            -- Conteo de locales 
+            (SELECT COUNT(*) 
+            FROM mapa_fdw.locales_madre l 
+            WHERE l.cui = e.cui AND l.borrado = 0) AS cantidad_locales,
+            -- Conteo de escaleras 
+            (SELECT COUNT(*) 
+            FROM mapa_fdw.escaleras_madre es 
+            WHERE es.cui = e.cui AND es.borrado = 0) AS cantidad_escaleras,
+            -- Conteo de tableros
+            (SELECT COUNT(*) 
+            FROM mapa_fdw.tableros_madre t 
+            WHERE t.cui = e.cui) AS cantidad_tableros
+            FROM mapa_fdw.edificios_madre e
+            WHERE e.cui = :cui";
+  $stmt3 = $pdo->prepare($sql3);
+  $stmt3->bindParam(':cui', $cui, PDO::PARAM_INT);
+  $stmt3->execute();
+  return $stmt3->fetch();
+}
+
+
+
+
+
+
+
+
 ?>
