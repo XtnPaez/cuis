@@ -118,6 +118,7 @@
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
           <li>Poblar la tabla puertas.</li>
+          <li>Poblar las direcciones sin datos porque la API no las encuentra, pero tenemos el punto de coordenadas.</li>
         </ul>
       </div><!-- termina pendientes -->
     </main>

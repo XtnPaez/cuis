@@ -48,6 +48,7 @@
     $edificio = $stmt->fetch();
     if ($edificio) {
       $_SESSION['edificio'] = $edificio;
+      $_SESSION['original_edificio'] = $edificio;
       header("Location: " . $_SERVER['PHP_SELF']);
       exit;
     } else {
@@ -65,6 +66,10 @@
     $error = $_SESSION['error'];
     unset($_SESSION['error']);
   }
+  if (isset($_SESSION['exito'])) {
+  $exito = $_SESSION['exito'];
+  unset($_SESSION['exito']);
+  }
   // Si se llega con GET (por redirección), buscar el edificio
   if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['cui'])) {
     $cui = $_GET['cui'];
@@ -80,45 +85,57 @@
   // Confirmación de modificación
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar']) && $_POST['confirmar'] === 'si') {
     try {
-      $gestionado = (isset($_POST['gestionado']) && $_POST['gestionado'] === '1') ? 1 : 0;
-      $predio_id = empty($_POST['predio_id']) ? null : $_POST['predio_id'];
-      $sql = "UPDATE cuis.edificios SET
-              estado = :estado,
-              sector = :sector,
-              predio_id = :predio_id,
-              institucion = :institucion,
-              gestionado = :gestionado,
-              x_gkba = :x_gkba,
-              y_gkba = :y_gkba,
-              x_wgs84 = :x_wgs84,
-              y_wgs84 = :y_wgs84
-              WHERE id = :id";
-      $stmt = $pdo->prepare($sql);
-      $stmt->execute([
-        ':estado' => $_POST['estado'],
-        ':sector' => $_POST['sector'],
-        ':predio_id' => $predio_id,
-        ':institucion' => $_POST['institucion'],
-        ':gestionado' => $gestionado,
-        ':x_gkba' => $_POST['x_gkba'],
-        ':y_gkba' => $_POST['y_gkba'],
-        ':x_wgs84' => $_POST['x_wgs84'],
-        ':y_wgs84' => $_POST['y_wgs84'],
-        ':id' => $_POST['id']
-      ]);
-      $exito = "Los cambios se guardaron correctamente.";
-      $_POST = [];
-    } catch (Exception $e) {
-      $error = "Error al guardar los cambios: " . $e->getMessage();
-    }
-  }
-  // Cancelar confirmación
-  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar']) && $_POST['confirmar'] === 'no') {
-    $sql = "SELECT * FROM cuis.edificios WHERE id = :id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $_POST['id']]);
-    $edificio = $stmt->fetch();
-  }
+      $original = $_SESSION['original_edificio'];
+      $campos = ['estado', 'sector', 'predio_id', 'institucion', 'gestionado'];
+      $a_actualizar = [];
+      $valores = [];
+      foreach ($campos as $campo) {
+        $nuevo = $_POST[$campo] ?? null;
+        if ($campo === 'gestionado') {
+        $nuevo = $nuevo == 1 ? 1 : 0;
+        $original[$campo] = $original[$campo] == 1 ? 1 : 0;
+        } elseif ($campo === 'predio_id') {
+        $nuevo = $nuevo === '' ? null : $nuevo;
+        $original[$campo] = $original[$campo] ?? null;
+        }
+        if ($nuevo != $original[$campo]) {
+        $a_actualizar[] = "$campo = :$campo";
+        $valores[":$campo"] = $nuevo;
+        }
+      }
+      if (!empty($a_actualizar)) {
+        $sql = "UPDATE cuis.edificios SET " . implode(', ', $a_actualizar) . " WHERE id = :id";
+        $valores[':id'] = $_POST['id'];
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($valores);
+        $campos_actualizados = array_map(function($campo) {
+          return explode(' =', $campo)[0]; // extrae el nombre del campo de "campo = :campo"
+        }, $a_actualizar);
+        $exito = "Se actualizaron los siguientes campos: " . implode(', ', $campos_actualizados);
+        $_SESSION['exito'] = $exito;
+        unset($_SESSION['original_edificio']);
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+        } else {
+          $exito = "No había cambios para guardar.";
+        }
+        unset($_SESSION['original_edificio']);
+        $_POST = [];
+        } catch (Exception $e) {
+          $error = "Error al guardar los cambios: " . $e->getMessage();
+        }
+      }
+      // Cancelar confirmación
+      if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar']) && $_POST['confirmar'] === 'no') {
+        $sql = "SELECT * FROM cuis.edificios WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':id' => $_POST['id']]);
+        $edificio = $stmt->fetch();
+        unset($_SESSION['original_edificio']);
+        $_SESSION['edificio'] = $edificio;
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+      }
 ?>
 <!doctype html>
 <html lang="es">
@@ -220,17 +237,72 @@
         </div>
       </form>
       <?php elseif (isset($_POST['confirmar']) && $_POST['confirmar'] === 'pendiente'): ?>
-      <!-- alert de confirmación -->
-      <div class="alert alert-warning text-center">
-        <p>¿Estás seguro de que querés guardar los cambios?</p>
-        <form method="POST" class="d-inline">
-          <?php foreach ($_POST as $key => $value): ?>
-            <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
-          <?php endforeach; ?>
-          <button type="submit" name="confirmar" value="si" class="btn btn-success me-2">Sí, cambiar</button>
-          <button type="submit" name="confirmar" value="no" class="btn btn-secondary">No, volver</button>
-        </form>
-      </div>
+        <?php
+          if (!isset($_SESSION['original_edificio']) || !is_array($_SESSION['original_edificio'])) {
+            echo '<div class="alert alert-danger">Error: no se encontró el estado original del edificio. Intentá buscarlo nuevamente.</div>';
+          } else {
+            $original = $_SESSION['original_edificio'];
+            $campos = ['estado', 'sector', 'predio_id', 'institucion', 'gestionado'];
+            $cambios = [];
+
+            foreach ($campos as $campo) {
+              $nuevo = $_POST[$campo] ?? null;
+
+              if ($campo === 'gestionado') {
+                $nuevo = $nuevo == 1 ? 1 : 0;
+                $original[$campo] = $original[$campo] == 1 ? 1 : 0;
+              } elseif ($campo === 'predio_id') {
+                $nuevo = $nuevo === '' ? null : $nuevo;
+                $original[$campo] = $original[$campo] ?? null;
+              }
+
+              if ($nuevo != $original[$campo]) {
+                $cambios[$campo] = [
+                  'de' => $original[$campo] ?? null,
+                  'a' => $nuevo
+                ];
+              }
+            }
+        ?>
+        <div class="alert alert-warning">
+          <p><strong>¿Estás seguro de que querés guardar los siguientes cambios?</strong></p>
+          <ul class="text-start">
+            <?php foreach ($cambios as $campo => $valores): ?>
+              <li><strong><?= ucfirst($campo) ?>:</strong>
+                de <code>
+                  <?php
+                    if ($campo === 'gestionado') {
+                      echo $valores['de'] ? 'Sí' : 'No';
+                    } else {
+                      echo ($valores['de'] === null || $valores['de'] === '') ? '[Campo sin datos]' : htmlspecialchars($valores['de']);
+                    }
+                  ?>
+                </code>
+                a <code>
+                  <?php
+                    if ($campo === 'gestionado') {
+                      echo $valores['a'] ? 'Sí' : 'No';
+                    } else {
+                      echo ($valores['a'] === null || $valores['a'] === '') ? '[Campo sin datos]' : htmlspecialchars($valores['a']);
+                    }
+                  ?>
+                </code>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+          <?php if (empty($cambios)): ?>
+            <div class="alert alert-info">No hay cambios para guardar.</div>
+          <?php else: ?>
+          <form method="POST">
+            <?php foreach ($_POST as $key => $value): ?>
+              <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
+            <?php endforeach; ?>
+            <button type="submit" name="confirmar" value="si" class="btn btn-success me-2">Sí, cambiar</button>
+            <button type="submit" name="confirmar" value="no" class="btn btn-secondary">No, volver</button>
+          </form>
+          <?php endif; ?>
+        </div>
+        <?php } // cierra else ?>
       <?php endif; ?>
     </main>
     <?php include('../includes/footer.php'); ?>
