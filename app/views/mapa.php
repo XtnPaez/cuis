@@ -30,14 +30,6 @@
     <?php include('../includes/navbar.php'); ?>
     <main class="flex-grow-1 container py-5">
       <div id="map" class="mb-5 mt-4"></div>
-      <!-- Div para comentarios y observaciones -->
-      <div class="mt-3 p-3 border border-warning rounded bg-light">
-        <h6 class="text-warning">Pendientes:</h6>
-        <ul class="mb-0">
-          <li>Mejorar las consultas para que los popups muestren "direccion principal" en CUI y "CUI" en Direcciones.</li>
-          <li>Pensar en un visualizador para corregir posiciones geográficas de los CUI. PARECE que a veces están en parcelas vecinas.</li>
-        </ul>
-      </div><!-- termina pendientes -->
     </main>
     <!-- Traigo footer -->
     <?php include('../includes/footer.php'); ?>    

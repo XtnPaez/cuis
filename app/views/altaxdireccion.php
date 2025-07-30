@@ -9,7 +9,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UEICEE : MAPA : CUIS : Alta de Edificio</title>
+    <title>CUIS : Alta de Edificio</title>
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/sticky.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -20,6 +20,7 @@
     <?php include('../includes/navbar.php'); ?>
     <main class="flex-grow-1 container py-5 mt-5">
       <h2 class="mb-4 text-center">Alta de CUI</h2>
+      <p>Se asume que si va a dar de alta un CUI, es porque ya chequeó que no existe desde aquí -> <a href="http://localhost/cuis/app/views/buscarcuixcallealtura.php"  class="link-info">Buscar CUI por Calle y Altura</a></p>
       <form id="formDireccion" class="row g-3 mb-4 mt-4">
         <div class="col-md-6">
           <label for="calle" class="form-label">Calle</label>

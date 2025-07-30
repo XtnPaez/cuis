@@ -61,7 +61,11 @@ fetch('../api/edificios.php')
       onEachFeature: (feature, layer) => {
         if (feature.properties) {
           layer.bindPopup(
-            `<b>CUI:</b> ${feature.properties.cui}<br><b>Estado:</b> ${feature.properties.estado}`
+            ` <b>CUI:</b> ${feature.properties.cui}<br>
+              <b>Estado:</b> ${feature.properties.estado}<br>
+              <b>Calle:</b> ${feature.properties.calle}<br>
+              <b>Altura:</b> ${feature.properties.altura}
+            `
           );
         }
       },
@@ -89,7 +93,8 @@ fetch('../api/direcciones.php')
       onEachFeature: (feature, layer) => {
         if (feature.properties) {
           layer.bindPopup(
-            `<b>Calle:</b> ${feature.properties.calle}<br><b>Altura:</b> ${feature.properties.altura}`
+            ` <b>CUI:</b> ${feature.properties.cui} <br>
+              <b>Dirección:</b> ${feature.properties.calle} ${feature.properties.altura}`
           );
         }
       },
