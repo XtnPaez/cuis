@@ -117,11 +117,11 @@
       <div class="mt-3 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
-          <li>Alta de CUI es lo último que vamos a hacer.</li>
-          <li>Poblar la tabla puertas.</li>
-          <li>Poblar las direcciones sin datos porque la API no las encuentra, pero tenemos el punto de coordenadas.</li>
-          <li>Pensar en un visualizador para corregir posiciones geográficas de los CUI. PARECE que a veces están en parcelas vecinas.</li>
-          <li>Pensar en un visualizador para corregir posiciones geográficas de Direcciones. PARECE que a veces están sobre CUI.</li>
+          <li>Para el MVP, falta Descargas y Alta de CUI (que es lo último que vamos a hacer).</li>
+          <li>Para el productivo: poblar las direcciones sin datos porque la API no las encuentra, pero tenemos el punto de coordenadas.</li>
+          <li>Para el productivo: pensar en un visualizador para corregir posiciones geográficas de los CUI. PARECE que a veces están en parcelas vecinas.</li>
+          <li>Para el productivo: pensar en un visualizador para corregir posiciones geográficas de Direcciones. PARECE que a veces están sobre CUI.</li>
+          <li>Para el productivo: poblar la tabla puertas. No es indispensable, pero si alguna vez podemos saber qué hay en cada puerta, vendría bien.</li>
         </ul>
       </div>
       
