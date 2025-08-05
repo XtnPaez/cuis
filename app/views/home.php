@@ -72,7 +72,17 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 6: Gestión de Tablas de Dominio -->
+        <!-- Tarjeta 6: Relación CUI - CUEANEXOS -->
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">Relación CUI - CUANEXOS</h5>
+              <p class="card-text">Generamos una tabla de relación entre CUI y CUANEXO. Detecta inconsistencias con Padrón Nación y lleva un registro de cambios.</p>
+              <a href="cuicueanexo.php" class="btn btn-primary mt-auto w-100">Ir a relación entre CUI -> CUEANEXO</a>
+            </div>
+          </div>
+        </div>
+        <!-- Tarjeta 7: Gestión de Tablas de Dominio -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -82,7 +92,7 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 7: Descargas -->
+        <!-- Tarjeta 8: Descargas -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -92,7 +102,7 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 8: Usuarios -->
+        <!-- Tarjeta 9: Usuarios -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -102,7 +112,7 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta 9: Mapa -->
+        <!-- Tarjeta 10: Mapa -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -118,9 +128,10 @@
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
           <li>Para el MVP, falta Descargas y Alta de CUI (que es lo último que vamos a hacer).</li>
+          <li>Para el MVP vamos a crear Relación CUI-CUEANEXO para llevar registro de cambios. Pensar inconsistencias con PADRON NACION.</li>
           <li>Para el productivo: poblar las direcciones sin datos porque la API no las encuentra, pero tenemos el punto de coordenadas.</li>
-          <li>Para el productivo: pensar en un visualizador para corregir posiciones geográficas de los CUI. PARECE que a veces están en parcelas vecinas.</li>
-          <li>Para el productivo: pensar en un visualizador para corregir posiciones geográficas de Direcciones. PARECE que a veces están sobre CUI.</li>
+          <li>Para el productivo: corregir posiciones geográficas de los CUI. PARECE que a veces están en parcelas vecinas -> Y si lo hacemos en QGis?</li>
+          <li>Para el productivo: corregir posiciones geográficas de Direcciones. PARECE que a veces están sobre CUI -> Y si lo hacemos en QGis?</li>
           <li>Para el productivo: poblar la tabla puertas. No es indispensable, pero si alguna vez podemos saber qué hay en cada puerta, vendría bien.</li>
         </ul>
       </div>

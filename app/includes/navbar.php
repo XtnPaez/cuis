@@ -33,6 +33,9 @@
           </ul>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="../views/cuicueanexo.php">CUI -> CUEANEXO</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="../views/actualizaciones.php">Gestión de Tablas de Dominio</a>
         </li>
         <li class="nav-item">

@@ -75,7 +75,7 @@
     <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UEICEE : MAPA : CUIS : ABM de Usuarios</title>
+    <title>CUIS : ABM de Usuarios</title>
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/sticky.css" rel="stylesheet">
     <link rel="apple-touch-icon" href="../images/apple-icon-180x180.png" sizes="180x180">
