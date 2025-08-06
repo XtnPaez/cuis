@@ -1,5 +1,7 @@
 <?php
+  // chequeo inicio de sesión
   session_start();
+  // traigo la conexion
   require_once('../config/config.php'); 
 ?>
 <!doctype html>
@@ -14,28 +16,24 @@
     <link rel="icon" href="../images/favicon-32x32.png" sizes="32x32" type="image/png">
     <link rel="icon" href="../images/favicon-16x16.png" sizes="16x16" type="image/png">
     <link rel="icon" href="../images/favicon.ico">
-    <script src="../js/jquery.min.js"></script>
-    <script src="../js/cuicueanexo.js"></script>
   </head>
   <body class="d-flex flex-column min-vh-100">
+    <!-- Traigo navbar -->
     <?php include('../includes/navbar.php'); ?>
-
     <main class="container mt-5 pt-5 flex-grow-1">
       <h2 class="text-center mb-5 mt-4">Relación CUI > CUEANEXO > CUEANEXO PADRÓN NACIÓN</h2>
-
       <div class="row row-cols-1 row-cols-md-3 g-4">
-        <!-- Card 1 -->
+        <!-- Tarjeta 1: Listado CUI - CUEANEXO - CUANEXO PADRON NACION -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
               <h5 class="card-title">Listado</h5>
               <p class="card-text">Listado comparativo entre CUI > CUEANEXO > CUANEXO PADRÓN NACIÓN.</p>
-              <button id="btnListado" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalListado">Listado</button>
+              <a href="#" class="btn btn-primary mt-auto w-100">Listado</a>
             </div>
           </div>
         </div>
-
-        <!-- Card 2 -->
+        <!-- Tarjeta 2: Listado de inconsistencias -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -44,9 +42,8 @@
               <a href="#" class="btn btn-primary mt-auto w-100">Inconsistencias</a>
             </div>
           </div>
-        </div>
-
-        <!-- Card 3 -->
+        </div>      
+        <!-- Tarjeta 3: Listado de cambios -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -57,50 +54,30 @@
           </div>
         </div>
       </div>
-
-      <!-- Card 4 -->
       <br>
-      <div class="col mt-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">Registro de actividad</h5>
-            <p class="card-text">Formulario para registrar toda la actividad vinculada a CUI -> CUEANEXOS.</p>
-            <a href="#" class="btn btn-primary mt-auto w-100">Abrir el formulario</a>
+      <!-- Tarjeta 4: Registro de actividad -->
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">Registro de actividad</h5>
+              <p class="card-text">Formulario para registrar toda la actividad vinculada a CUI -> CUEANEXOS.</p>
+              <a href="#" class="btn btn-primary mt-auto w-100">Abrir el formulario</a>
+            </div>
           </div>
         </div>
-      </div>
-
       <!-- Pendientes -->
-      <div class="mt-4 p-3 border border-warning rounded bg-light">
+      <div class="mt-3 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
+          <li>Generar listado CUI - CUANEXO - CUANEXO PNAC.</li>
           <li>Generar listado paginado de inconsistencias entre CUI - CUANEXO - CUANEXO PNAC.</li>
-          <li>Registrar actualizaciones del listado. Formulario con combos de CUI - CUANEXO - ACCION (Informe a Padrón - Modificación de relación entre CUI y CUEANEXO). Registrar el cambio y el usuario en la base.</li>
+          <li>Registrar actualizaciones del listado. Formulario con combos de CUI - CUANEXO - ACCION (Informe a Padrón - Modificación de relación entre CUI y CUEANEXO). Regitrar el cambio y el usuario en la base.</li>
           <li>Listar cambios. Todos, por fecha, por CUI, por CUEANEXO, por usuario.</li>
         </ul>
       </div>
+      <!-- termina pendientes -->
     </main>
-
-    <!-- MODAL -->
-    <div class="modal fade" id="modalListado" tabindex="-1" aria-labelledby="modalListadoLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalListadoLabel">Ejemplo de registros CUI -> CUEANEXO</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-          </div>
-          <div class="modal-body" id="resultadoListado">
-            <!-- Aquí se carga la tabla por AJAX -->
-            <p>Cargando registros...</p>
-          </div>
-          <div class="modal-footer">
-            <a href="../descargar/descargar_cui_cueanexo.php" class="btn btn-success">Descargar Excel Completo</a>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <!-- Traigo footer -->
     <?php include('../includes/footer.php'); ?>
     <script src="../js/bootstrap.bundle.min.js"></script>
   </body>

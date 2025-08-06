@@ -76,9 +76,9 @@
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
-              <h5 class="card-title">Relación CUI - CUANEXOS</h5>
-              <p class="card-text">Generamos una tabla de relación entre CUI y CUANEXO. Detecta inconsistencias con Padrón Nación y lleva un registro de cambios.</p>
-              <a href="cuicueanexo.php" class="btn btn-primary mt-auto w-100">Ir a relación entre CUI -> CUEANEXO</a>
+              <h5 class="card-title">Relación CUI -> CUANEXOS</h5>
+              <p class="card-text">Generamos una tabla de relación entre CUI y CUANEXOS. Detecta inconsistencias con Padrón Nación y lleva un registro de cambios.</p>
+              <a href="cuicueanexo.php" class="btn btn-primary mt-auto w-100">Ir a relación entre CUI -> CUEANEXOS</a>
             </div>
           </div>
         </div>
