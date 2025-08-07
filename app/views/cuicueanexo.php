@@ -1,6 +1,6 @@
 <?php
-  session_start();
-  require_once('../config/config.php'); 
+session_start();
+require_once('../config/config.php');
 ?>
 <!doctype html>
 <html lang="es">
@@ -19,9 +19,11 @@
   </head>
   <body class="d-flex flex-column min-vh-100">
     <?php include('../includes/navbar.php'); ?>
+
     <main class="container mt-5 pt-5 flex-grow-1">
       <h2 class="text-center mb-5 mt-4">Relación CUI > CUEANEXO > CUEANEXO PADRÓN NACIÓN</h2>
-      <!-- Card 1 -->
+
+      <!-- Card: Registro de actividad -->
       <div class="col mt-4">
         <div class="card h-100 shadow-sm">
           <div class="card-body d-flex flex-column">
@@ -31,9 +33,11 @@
           </div>
         </div>
       </div>
+
       <br>
+
       <div class="row row-cols-1 row-cols-md-3 g-4">
-        <!-- Card 2 -->
+        <!-- Card: Listado -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -43,7 +47,8 @@
             </div>
           </div>
         </div>
-        <!-- Card 3 -->
+
+        <!-- Card: Inconsistencias -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -53,7 +58,8 @@
             </div>
           </div>
         </div>
-        <!-- Card 4 -->
+
+        <!-- Card: Registro de cambios -->
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -64,18 +70,19 @@
           </div>
         </div>
       </div>
-      <!-- Pendientes -->
+
+      <!-- Bloque: Pendientes -->
       <div class="mt-4 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
-          <li>Al listado de inconsistencias entre CUI - CUANEXO en EDDY agregarle la query de update</li>
           <li>Generar modal para editar CUI - CUANEXO PADRÓN NACIÓN</li>
           <li>Registrar actualizaciones del listado. Formulario con combos de CUI - CUANEXO - ACCION (Informe a Padrón - Modificación de relación entre CUI y CUEANEXO). Registrar el cambio y el usuario en la base.</li>
           <li>Listar cambios. Todos, por fecha, por CUI, por CUEANEXO, por usuario.</li>
         </ul>
       </div>
     </main>
-    <!-- MODAL -->
+
+    <!-- Modal: Listado -->
     <div class="modal fade" id="modalListado" tabindex="-1" aria-labelledby="modalListadoLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -84,7 +91,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
           </div>
           <div class="modal-body" id="resultadoListado">
-            <!-- Aquí se carga la tabla por AJAX -->
             <p>Cargando registros...</p>
           </div>
           <div class="modal-footer">
@@ -94,8 +100,8 @@
         </div>
       </div>
     </div>
-    
-<!-- Modal: Inconsistencias -->
+
+    <!-- Modal: Inconsistencias -->
     <div class="modal fade" id="modalInconsistencias" tabindex="-1" aria-labelledby="modalInconsistenciasLabel" aria-hidden="true">
       <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
@@ -112,7 +118,6 @@
         </div>
       </div>
     </div>
-
 
     <?php include('../includes/footer.php'); ?>
     <script src="../js/bootstrap.bundle.min.js"></script>

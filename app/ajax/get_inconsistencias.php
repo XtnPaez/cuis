@@ -7,7 +7,7 @@ $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 echo '<table class="table table-bordered">';
 echo '<thead><tr>
-        <th>ID CUI</th>
+        <th>ID</th>
         <th>CUI</th>
         <th>CUEANEXO</th>
         <th>Acciones</th>

@@ -1,16 +1,12 @@
 $(document).ready(function () {
-
-    // Botón listado
+    // Botón Listado
     $('#btnListado').click(function () {
-        cargarPagina(1);
-    });
-
-    // Cargar una página específica
-    window.cargarPagina = function (pagina) {
-        $.get('../ajax/get_cui_cueanexo.php?page=' + pagina, function (data) {
+        $.get('../ajax/get_cui_cueanexo.php', function (data) {
             $('#resultadoListado').html(data);
+        }).fail(function () {
+            $('#resultadoListado').html('<div class="alert alert-danger">Error al cargar los datos.</div>');
         });
-    };
+    });
 });
 
 $(document).ready(function () {
@@ -102,3 +98,44 @@ $(document).on('click', '.btnCancelarEdicion', function () {
     `);
 });
 
+$(document).on('click', '.btnGuardar', function () {
+    var btn = $(this);
+    var row = btn.closest('tr');
+    var idrel = btn.data('idrel');
+
+    var cui = row.find('td').eq(1).find('select').val();
+    var cueanexo = row.find('td').eq(2).find('input').val();
+
+    $.ajax({
+        url: '../ajax/update_cui_cueanexo.php',
+        method: 'POST',
+        data: {
+            idrel: idrel,
+            cui: cui,
+            cueanexo: cueanexo
+        },
+        success: function (response) {
+            if (response === 'OK') {
+                // Reemplazar fila con valores nuevos
+                row.find('td').eq(1).text(cui);
+                row.find('td').eq(2).text(cueanexo);
+                row.find('td').eq(3).html(`
+                    <button class="btn btn-sm btn-primary btnEditar" 
+                            data-idrel="${idrel}" 
+                            data-cui="${cui}" 
+                            data-cueanexo="${cueanexo}">
+                        Editar
+                    </button>
+                    <a href="buscarcuixcodigo.php" class="btn btn-sm btn-success">
+                        Dar de Alta CUI
+                    </a>
+                `);
+            } else {
+                alert('Error al guardar: ' + response);
+            }
+        },
+        error: function () {
+            alert('Error en la comunicación con el servidor.');
+        }
+    });
+});
