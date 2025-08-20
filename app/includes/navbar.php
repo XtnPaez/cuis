@@ -20,10 +20,10 @@
           <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
             <li><a class="dropdown-item" href="../views/buscarcuixcodigo.php">Buscar CUI por Código</a></li>
             <li><a class="dropdown-item" href="../views/buscarcuixcallealtura.php">Buscar CUI por Calle y Altura</a></li>
-            <li class="nav-item"><a class="nav-link" href="../views/editar.php">Editar CUI</a></li>
+            <li><a class="dropdown-item" href="../views/editar.php">Editar CUI</a></li>
             <li><a class="dropdown-item" href="../views/altaxdireccion.php">Alta de CUI por dirección</a></li>
             <li><a class="dropdown-item" href="../views/altaxmapa.php">Alta de CUI desde un mapa</a></li>
-            <li class="nav-item"><a class="nav-link" href="../views/cuicueanexo.php">CUI -> CUEANEXOS</a></li>
+            <li><a class="dropdown-item" href="../views/cuicueanexo.php">CUI -> CUEANEXOS</a></li>
           </ul>
         </li>
         <li class="nav-item">
