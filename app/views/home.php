@@ -82,6 +82,16 @@
             </div>
           </div>
         </div>
+        <!-- Tarjeta 7: Gestión de Aulas -->
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">Gestión de Aulas</h5>
+              <p class="card-text">Listado de aulas por CUI. Generación de QR. Gestión de la info para mostrar.</p>
+              <a href="cuiaula.php" class="btn btn-primary mt-auto w-100">Ir a gestión de aulas</a>
+            </div>
+          </div>
+        </div>
         <!-- Tarjeta 7: Gestión de Tablas de Dominio -->
         <div class="col">
           <div class="card h-100 shadow-sm">
@@ -127,6 +137,7 @@
       <div class="mt-3 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
+          <li>Incorporar Aula a EDDY.</li>
           <li>Para el MVP, falta Descargas y Alta de CUI (que es lo último que vamos a hacer).</li>
           <li>Para el MVP vamos a crear Relación CUI-CUEANEXO para llevar registro de cambios. Pensar inconsistencias con PADRON NACION.</li>
           <li>Para el productivo: poblar las direcciones sin datos porque la API no las encuentra, pero tenemos el punto de coordenadas.</li>
