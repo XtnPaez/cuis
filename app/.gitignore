@@ -1,5 +1,5 @@
 # Ignorar todo dentro de app/qr
-app/qr/*
+qr/*
 
 # Pero permitir el .gitkeep
-!app/qr/.gitkeep
+!qr/.gitkeep
