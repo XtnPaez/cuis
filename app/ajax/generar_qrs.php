@@ -39,14 +39,15 @@ try {
             QRcode::png($url, $filename, QR_ECLEVEL_L, 10);
             
             // Insertar o actualizar en la tabla de control
-            $sqlInsert = "INSERT INTO cuis.aulas_qr (cui, qr_generado, fecha_generacion, ruta_archivo) 
-                          VALUES (:cui, TRUE, NOW(), :ruta_archivo)
-                          ON CONFLICT (cui) 
+            $sqlInsert = "INSERT INTO cuis.aulas_qr (cui, local, qr_generado, fecha_generacion, ruta_archivo) 
+                          VALUES (:cui, :local, TRUE, NOW(), :ruta_archivo)
+                          ON CONFLICT (cui, local) 
                           DO UPDATE SET qr_generado = TRUE, fecha_generacion = NOW(), ruta_archivo = EXCLUDED.ruta_archivo";
             
             $stmtInsert = $pdo->prepare($sqlInsert);
             $stmtInsert->execute([
                 ':cui' => $cui,
+                ':local' => $local,
                 ':ruta_archivo' => "qr/{$cui}_{$local}.png"
             ]);
             
