@@ -137,7 +137,6 @@
       <div class="mt-3 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
-          <li>Incorporar Aula a EDDY.</li>
           <li>Para el MVP, falta Descargas y Alta de CUI (que es lo último que vamos a hacer).</li>
           <li>Para el MVP vamos a crear Relación CUI-CUEANEXO para llevar registro de cambios. Pensar inconsistencias con PADRON NACION.</li>
           <li>Para el productivo: poblar las direcciones sin datos porque la API no las encuentra, pero tenemos el punto de coordenadas.</li>

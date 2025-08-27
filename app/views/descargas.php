@@ -47,8 +47,15 @@ $hoy = date('d/m/Y');
     <div class="mt-3 p-3 border border-warning rounded bg-light">
               <h6 class="text-warning">Pendientes:</h6>
               <ul class="mb-0">
-                <li>Hay que mejorar el script para que consulte el catalogo y escribir un descargar.php generico</li>
-                <li>Para el productivo: crear el trigger que genere los cortes automaticamente (materialized views) y los catalogue.</li>
+                <li>Hay que pensar cómo hacemos esto.</li>
+                <li>Endpoints? Catalogo?</li>
+                <li>Qué habría para descargar?
+                  <ul>
+                    <li>Padrón de CUI actualizado</li>
+                    <li>Padrón de CUI por cortes</li>
+                    <li>Documentación</li>
+                  <ul>
+                </li>
               </ul>
             </div>
 
