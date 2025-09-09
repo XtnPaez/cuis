@@ -1,19 +1,21 @@
 <?php
 function buscarCUI($pdo, $cui) {
   $sql = "SELECT 
-            edi.cui, UPPER(edi.estado) as estado, UPPER(edi.sector) as sector, 
+            edi.cui, est.descripcion as estado, UPPER(edi.sector) as sector, 
               CASE WHEN edi.institucion is null THEN 'Sin Institución Asociada' ELSE edi.institucion END as institucion,
               CASE WHEN edi.gestionado = true THEN 'Gestionado' ELSE 'No Gestionado' END as gestionado, edi.x_gkba, edi.y_gkba, edi.ffrr_2022,
               dir.codigo_calle, dir.calle, dir.altura, 
             CASE WHEN pre.cup is null THEN 'Sin Predio' ELSE pre.cup END as codpre, 
             CASE WHEN pre.nombre is null THEN 'Sin Predio' ELSE pre.nombre END as predio,
-            edr.operativo_1, edr.operativo_2,
+            CASE WHEN edr.operativo_1 IS TRUE THEN 'SI' ELSE 'NO' END as operativo_1,
+            CASE WHEN edr.operativo_2 IS TRUE THEN 'SI' ELSE 'NO' END as operativo_2,
             par.smp, par.superficie_total, par.superficie_cubierta, par.frente, par.fondo, par.propiedad_horizontal, par.pisos_bajo_rasante, 
               par.pisos_sobre_rasante, 
             uba.comuna, uba.barrio, uba.comisaria, uba.area_hospitalaria, uba.region_sanitaria, uba.distrito_escolar, uba.comisaria_vecinal, 
               uba.seccion_catastral, uba.codigo_postal, uba.codigo_postal_argentino,
             coo.x_wgs84, coo.y_wgs84
           FROM cuis.edificios edi
+          left join cuis.estados est on edi.estado = est.id
           left join cuis.edificios_direcciones edd on edi.id = edd.edificio_id
           left join cuis.predios pre on edi.predio_id = pre.id
           left join cuis.v_edificios_relevamientos edr on edi.cui = edr.cui
