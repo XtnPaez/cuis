@@ -75,9 +75,11 @@ require_once('../config/config.php');
       <div class="mt-4 p-3 border border-warning rounded bg-light">
         <h6 class="text-warning">Pendientes:</h6>
         <ul class="mb-0">
-          <li>Generar modal para editar CUI - CUANEXO PADRÓN NACIÓN</li>
-          <li>Registrar actualizaciones del listado. Formulario con combos de CUI - CUANEXO - ACCION (Informe a Padrón - Modificación de relación entre CUI y CUEANEXO). Registrar el cambio y el usuario en la base.</li>
-          <li>Listar cambios. Todos, por fecha, por CUI, por CUEANEXO, por usuario.</li>
+          <li>Vamos a repensar. Lo que queremos es ver la relación entre CUI y CUEANEXO en PADRON NACION?</li>
+          <li>Que ningún CUEANEXO (PN) esté huérfano de CUI. Eso lo podemos chequear pero no lo podemos operar nosotros, hay que avisarle a PADRÓN</li>
+          <li>(?) Generar modal para editar CUI - CUANEXO PADRÓN NACIÓN</li>
+          <li>(?) Registrar actualizaciones del listado. Formulario con combos de CUI - CUANEXO - ACCION (Informe a Padrón - Modificación de relación entre CUI y CUEANEXO). Registrar el cambio y el usuario en la base.</li>
+          <li>(?) Listar cambios. Todos, por fecha, por CUI, por CUEANEXO, por usuario.</li>
         </ul>
       </div>
     </main>

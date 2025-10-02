@@ -1,5 +1,7 @@
 # Ignorar todo dentro de app/qr
 qr/*
+qr_etiquetas/*
 
 # Pero permitir el .gitkeep
 !qr/.gitkeep
+!qr_etiquetas/.gitkeep
